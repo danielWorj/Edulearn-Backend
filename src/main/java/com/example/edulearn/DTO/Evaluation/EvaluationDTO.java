@@ -1,0 +1,25 @@
+package com.example.edulearn.DTO.Evaluation;
+
+import com.example.edulearn.ENTITY.Evaluation.Enseignant.Composition;
+import com.example.edulearn.ENTITY.Utilisateur.Eleve.Eleve;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Data;
+
+import java.time.LocalTime;
+
+@Entity
+@Table
+@Data
+public class EvaluationDTO {
+    private Integer id ;
+    private LocalTime startTime ;
+    private LocalTime endTime ;
+    private Integer note ;
+    private Boolean completed ;
+    private Integer eleve;
+    private Integer composition;
+}
