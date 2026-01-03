@@ -27,6 +27,9 @@ public interface EvaluationControllerInt {
     ResponseEntity<List<Composition>> findAllCompositionByEnseignant(@PathVariable Integer id);
     @GetMapping("/composition/all/byrepetition/{id}")
     ResponseEntity<List<Composition>> findAllCompositionByRepetition(@PathVariable Integer id);
+    @GetMapping("/composition/all/bymatiere/{id}")
+    ResponseEntity<List<Composition>> findAllCompositionByMatiere(@PathVariable Integer id);
+
     @PostMapping("/composition/create")
     ResponseEntity<Integer> creationComposition(@RequestParam("composition") String composition) throws JsonProcessingException;
     @PostMapping("/composition/update")
@@ -67,6 +70,9 @@ public interface EvaluationControllerInt {
     ResponseEntity<ServerResponse> updateEvaluation(@RequestParam("evaluation") String evaluation);
     @GetMapping("/tentative-evaluation/delete/{id}")
     ResponseEntity<ServerResponse> deleteEvaluation(@PathVariable Integer id);
+    //Note finale de la composition
+    @GetMapping("/tentative-evaluation/notefinale/bytentative/{id}")
+    ResponseEntity<Double> calculDeLanoteFinale(@PathVariable Integer id);
 
     //CRUD Reponse Eleve
     @GetMapping("/reponseeleve/all/byEvaluation/{id}")
@@ -78,5 +84,4 @@ public interface EvaluationControllerInt {
     @GetMapping("/reponseeleve/delete/{id}")
     ResponseEntity<ServerResponse> deleteReponseEleve(@PathVariable Integer id);
 
-
-}
+  }

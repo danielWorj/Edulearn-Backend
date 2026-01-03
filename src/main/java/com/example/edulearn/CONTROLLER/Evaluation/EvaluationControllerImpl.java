@@ -80,6 +80,15 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
     }
 
     @Override
+    public ResponseEntity<List<Composition>> findAllCompositionByMatiere(Integer id) {
+        return ResponseEntity.ok(
+                this.compositionRepository.findByMatiere(
+                        this.matiereRepository.findById(id).orElse(null)
+                )
+        );
+    }
+
+    @Override
     public ResponseEntity<Integer> creationComposition(String composition) throws JsonProcessingException {
         CompositionDTO compositionDTO = new ObjectMapper().readValue(composition, CompositionDTO.class);
 
@@ -87,6 +96,7 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
 
         compositionDB.setRepetition(this.repetitionRepository.findById(compositionDTO.getRepetition()).orElse(null));
         compositionDB.setDescription(compositionDTO.getDescription());
+        compositionDB.setMatiere(this.matiereRepository.findById(compositionDTO.getMatiere()).orElse(null));
         compositionDB.setTypeEvaluation(this.typeEvaluationRepository.findById(compositionDTO.getTypeEvaluation()).orElse(null));
         compositionDB.setDuree(compositionDTO.getDuree());
         compositionDB.setActive(true);
@@ -114,6 +124,7 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
             compositionDB.setDescription(compositionDTO.getDescription());
             compositionDB.setTypeEvaluation(this.typeEvaluationRepository.findById(compositionDTO.getTypeEvaluation()).orElse(null));
             compositionDB.setDuree(compositionDTO.getDuree());
+            compositionDB.setMatiere(this.matiereRepository.findById(compositionDTO.getMatiere()).orElse(null));
             compositionDB.setActive(true);
             compositionDB.setArchived(false); //Par defaut , nom archivé
             compositionDB.setDateCreation(LocalDate.now());
@@ -322,5 +333,42 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
     public ResponseEntity<ServerResponse> deleteReponseEleve(Integer id) {
         this.reponseEleveRepository.deleteById(id);
         return ResponseEntity.ok(new ServerResponse("Reponse eleve deleted successfully",true));
+    }
+
+    @Override
+    public ResponseEntity<Double> calculDeLanoteFinale(Integer id) {
+
+        //return note final
+        //1- liste des reponses elve et initialisation
+        Double noteFinal = 0.0;
+        List<ReponseEleve> listReponseEleve = this.reponseEleveRepository.findByEvaluation(
+                this.evaluationRepository.findById(id).orElse(null)
+        );
+
+        //2- For pour parcourir la liste de ces reponses
+        for (ReponseEleve reponseEleve : listReponseEleve){
+            //3- Pour chaque reponde
+            //si c'est vrai on ajoute le point au toal de points
+            if (reponseEleve.getReponseChoisie().getCorrecte()){
+                noteFinal =noteFinal+reponseEleve.getQuestion().getPoints();
+            }
+        }
+
+        //Apres le calcul on met a jour la classe evaluation ( endTime , note , completed )
+
+        Evaluation tentativeEvaluationToUpdate = this.evaluationRepository.findById(id).orElse(null);
+        if (Objects.nonNull(tentativeEvaluationToUpdate)){
+            tentativeEvaluationToUpdate.setCompleted(true);
+            tentativeEvaluationToUpdate.setEndTime(
+                    tentativeEvaluationToUpdate.getStartTime().plusMinutes(tentativeEvaluationToUpdate.getComposition().getDuree())
+            );
+            tentativeEvaluationToUpdate.setNote(noteFinal);
+            this.evaluationRepository.save(tentativeEvaluationToUpdate);
+        }else {
+            System.out.println("tentative evaluation : not found");
+        }
+
+
+        return ResponseEntity.ok(noteFinal);
     }
 }

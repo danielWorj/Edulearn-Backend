@@ -118,6 +118,22 @@ public class RepetitionControllerImpl implements RepetitionController {
     }
 
     @Override
+    public ResponseEntity<List<Matiere>> findAllMatiereByOffreRepetition(Integer id) {
+        return ResponseEntity.ok(this.matiereRepetitionRepository.findMatieraByRepetition(
+                this.repetitionRepository.findById(id).orElse(null)
+        ));
+    }
+
+    @Override
+    public ResponseEntity<List<Matiere>> findAllMatiereForEleve(Integer id) {
+        return ResponseEntity.ok(
+                this.matiereRepetitionRepository.findMatiereForEleve(
+                        this.eleveRepository.findById(id).orElse(null)
+                )
+        );
+    }
+
+    @Override
     public ResponseEntity<ServerResponse> createHoraireRepetition(String horairerepetition) throws JsonProcessingException {
         HoraireRepetitionDTO horaireRepetitionDTO = new ObjectMapper().readValue(horairerepetition, HoraireRepetitionDTO.class);
 

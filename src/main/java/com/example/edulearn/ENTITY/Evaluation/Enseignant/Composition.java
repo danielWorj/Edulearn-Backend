@@ -30,6 +30,10 @@ public class Composition {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Repetition repetition;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Matiere matiere;
+
 
 
 }

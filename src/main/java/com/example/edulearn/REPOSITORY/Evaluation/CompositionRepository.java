@@ -18,5 +18,7 @@ public interface CompositionRepository extends JpaRepository<Composition,Integer
     List<Composition> findByEnseignant(@Param("en") Enseignant en);
     List<Composition> findByRepetition(Repetition repetition);
 
+    List<Composition> findByMatiere(Matiere matiere);
+
 
 }

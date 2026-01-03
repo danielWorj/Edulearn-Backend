@@ -19,7 +19,7 @@ public class Evaluation {
     private Integer id ;
     private LocalTime startTime ;
     private LocalTime endTime ;
-    private Integer note ;
+    private Double note ;
     private Boolean completed ;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,5 +1,6 @@
 package com.example.edulearn.CONTROLLER.Repetition;
 
+import com.example.edulearn.ENTITY.Academie.Matiere;
 import com.example.edulearn.ENTITY.Repetition.HoraireRepetition;
 import com.example.edulearn.ENTITY.Repetition.MatiereRepetition;
 import com.example.edulearn.ENTITY.Repetition.OffreRepetition;
@@ -26,7 +27,10 @@ public interface RepetitionController {
     ResponseEntity<ServerResponse> createMatiereRepetition(@RequestParam("matiererepetition") String matiererepetition) throws JsonProcessingException;
     @GetMapping("/matiere-repetition/all/byrepetition/{id}")
     ResponseEntity<List<MatiereRepetition>> findAllMatiereRepetitionByRepetition(@PathVariable Integer id);
-
+    @GetMapping("/matiere-repetition/allmatiere/byreptition/{id}")
+    ResponseEntity<List<Matiere>> findAllMatiereByOffreRepetition(@PathVariable Integer id);
+    @GetMapping("/matiere-repetition/allmatiere/byeleve/{id}")
+    ResponseEntity<List<Matiere>> findAllMatiereForEleve(@PathVariable Integer id);
     //Horaire Repetition
     @PostMapping("/horaire-repetition/create")
     ResponseEntity<ServerResponse> createHoraireRepetition(@RequestParam("horairerepetition") String horairerepetition) throws JsonProcessingException;

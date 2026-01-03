@@ -21,4 +21,8 @@ public class CompositionDTO {
     private Boolean archived ;
     private Integer typeEvaluation;
     private Integer repetition;
+    private Integer matiere;
+
+
+
 }
