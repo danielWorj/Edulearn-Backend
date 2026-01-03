@@ -14,13 +14,13 @@ import com.example.edulearn.REPOSITORY.Academie.FiliereRepository;
 import com.example.edulearn.REPOSITORY.Academie.NiveauRepository;
 import com.example.edulearn.REPOSITORY.Academie.SectionRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
-import tools.jackson.databind.ObjectMapper;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Path;
@@ -58,7 +58,7 @@ public class UtilisateurControllerImpl implements UtilisateurControllerInt{
     private static String folderFile = System.getProperty("user.dir")+"/src/main/resources/templates/platform/public/assets/file"; //chemin a déinir
 
     @Override
-    public ResponseEntity<AuthData> loginUser(String auth) {
+    public ResponseEntity<AuthData> loginUser(String auth) throws JsonProcessingException {
 
         AuthDTO authDTO = new ObjectMapper().readValue(auth, AuthDTO.class);
 

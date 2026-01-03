@@ -18,13 +18,14 @@ import com.example.edulearn.REPOSITORY.Repetition.RepetitionRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.EleveRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.EnseignantRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.ParentRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -51,7 +52,7 @@ public class RepetitionControllerImpl implements RepetitionController {
     private HoraireRepetitionRepository horaireRepetitionRepository;
 
     @Override
-    public ResponseEntity<Integer> createRepetition(String repetition) {
+    public ResponseEntity<Integer> createRepetition(String repetition) throws JsonProcessingException {
         RepetitionDTO repetitionDTO = new ObjectMapper().readValue(repetition, RepetitionDTO.class);
 
         System.out.println(repetitionDTO);
@@ -89,7 +90,7 @@ public class RepetitionControllerImpl implements RepetitionController {
     }
 
     @Override
-    public ResponseEntity<ServerResponse> createMatiereRepetition(String matiererepetition) {
+    public ResponseEntity<ServerResponse> createMatiereRepetition(String matiererepetition) throws JsonProcessingException {
         MatiereRepetitionDTO matiereRepetitionDTO = new ObjectMapper().readValue(matiererepetition, MatiereRepetitionDTO.class);
 
         MatiereRepetition matiereRepetitionDB = new MatiereRepetition();
@@ -117,7 +118,7 @@ public class RepetitionControllerImpl implements RepetitionController {
     }
 
     @Override
-    public ResponseEntity<ServerResponse> createHoraireRepetition(String horairerepetition) {
+    public ResponseEntity<ServerResponse> createHoraireRepetition(String horairerepetition) throws JsonProcessingException {
         HoraireRepetitionDTO horaireRepetitionDTO = new ObjectMapper().readValue(horairerepetition, HoraireRepetitionDTO.class);
 
         HoraireRepetition horaireRepetition = new HoraireRepetition();
@@ -144,7 +145,7 @@ public class RepetitionControllerImpl implements RepetitionController {
     }
 
     @Override
-    public ResponseEntity<ServerResponse> createOffreRepetition(String offrerepetition) {
+    public ResponseEntity<ServerResponse> createOffreRepetition(String offrerepetition) throws JsonProcessingException {
         ServerResponse serverResponse = new ServerResponse();
 
         OffreRepetitionDTO offreRepetitionDTO = new ObjectMapper().readValue(offrerepetition, OffreRepetitionDTO.class);
@@ -175,7 +176,7 @@ public class RepetitionControllerImpl implements RepetitionController {
     }
 
     @Override
-    public ResponseEntity<ServerResponse> updateOffreRepetition(String offrerepetition) {
+    public ResponseEntity<ServerResponse> updateOffreRepetition(String offrerepetition) throws JsonProcessingException {
 
         ServerResponse serverResponse = new ServerResponse();
 

@@ -5,6 +5,7 @@ import com.example.edulearn.ENTITY.Repetition.MatiereRepetition;
 import com.example.edulearn.ENTITY.Repetition.OffreRepetition;
 import com.example.edulearn.ENTITY.Repetition.Repetition;
 import com.example.edulearn.ENTITY.Response.ServerResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,28 +16,28 @@ import java.util.List;
 public interface RepetitionController {
     //Repetition
     @PostMapping("/create")
-    ResponseEntity<Integer> createRepetition(@RequestParam("repetition") String repetition);
+    ResponseEntity<Integer> createRepetition(@RequestParam("repetition") String repetition) throws JsonProcessingException;
     @GetMapping("/allsession/byenseignant/{id}")
     ResponseEntity<List<Repetition>> findAllSessionRepetitionByEnseignant(@PathVariable Integer id);
 
 
     //Matiere repetition
     @PostMapping("/matiere-repetition/create")
-    ResponseEntity<ServerResponse> createMatiereRepetition(@RequestParam("matiererepetition") String matiererepetition);
+    ResponseEntity<ServerResponse> createMatiereRepetition(@RequestParam("matiererepetition") String matiererepetition) throws JsonProcessingException;
     @GetMapping("/matiere-repetition/all/byrepetition/{id}")
     ResponseEntity<List<MatiereRepetition>> findAllMatiereRepetitionByRepetition(@PathVariable Integer id);
 
     //Horaire Repetition
     @PostMapping("/horaire-repetition/create")
-    ResponseEntity<ServerResponse> createHoraireRepetition(@RequestParam("horairerepetition") String horairerepetition);
+    ResponseEntity<ServerResponse> createHoraireRepetition(@RequestParam("horairerepetition") String horairerepetition) throws JsonProcessingException;
     @GetMapping("/horaire-repetition/all/byrepetition/{id}")
     ResponseEntity<List<HoraireRepetition>> findAllHoraireByRepetition(@PathVariable Integer id);
 
     //Offre
     @PostMapping("/offre/create")
-    ResponseEntity<ServerResponse> createOffreRepetition(@RequestParam("offrerepetition") String offrerepetition);
+    ResponseEntity<ServerResponse> createOffreRepetition(@RequestParam("offrerepetition") String offrerepetition) throws JsonProcessingException;
     @PostMapping("/offre/update")
-    ResponseEntity<ServerResponse> updateOffreRepetition(@RequestParam("offrerepetition") String offrerepetition);
+    ResponseEntity<ServerResponse> updateOffreRepetition(@RequestParam("offrerepetition") String offrerepetition) throws JsonProcessingException;
     @GetMapping("/offre/all")
     ResponseEntity<List<OffreRepetition>> findAllRepetitionOffre();
     @GetMapping("/offre/findbyid/{id}")

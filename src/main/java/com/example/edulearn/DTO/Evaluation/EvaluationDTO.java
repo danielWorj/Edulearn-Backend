@@ -11,8 +11,7 @@ import lombok.Data;
 
 import java.time.LocalTime;
 
-@Entity
-@Table
+
 @Data
 public class EvaluationDTO {
     private Integer id ;
@@ -20,6 +19,5 @@ public class EvaluationDTO {
     private LocalTime endTime ;
     private Integer note ;
     private Boolean completed ;
-    private Integer eleve;
     private Integer composition;
 }

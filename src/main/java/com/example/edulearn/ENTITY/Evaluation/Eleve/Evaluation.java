@@ -21,9 +21,6 @@ public class Evaluation {
     private LocalTime endTime ;
     private Integer note ;
     private Boolean completed ;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Eleve eleve;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

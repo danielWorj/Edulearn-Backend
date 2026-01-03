@@ -7,12 +7,12 @@ import com.example.edulearn.ENTITY.Response.ServerResponse;
 import com.example.edulearn.REPOSITORY.MarketPlace.RessourceRepository;
 import com.example.edulearn.REPOSITORY.MarketPlace.TypeRessourceRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.EnseignantRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
-import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.file.Path;

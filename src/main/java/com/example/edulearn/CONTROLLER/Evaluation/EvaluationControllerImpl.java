@@ -6,9 +6,11 @@ import com.example.edulearn.ENTITY.Evaluation.Eleve.ReponseEleve;
 import com.example.edulearn.ENTITY.Evaluation.Enseignant.Composition;
 import com.example.edulearn.ENTITY.Evaluation.Enseignant.Question;
 import com.example.edulearn.ENTITY.Evaluation.Enseignant.ReponsePossible;
+import com.example.edulearn.ENTITY.Evaluation.Enseignant.TypeEvaluation;
 import com.example.edulearn.ENTITY.Response.ServerResponse;
 import com.example.edulearn.REPOSITORY.Academie.MatiereRepository;
 import com.example.edulearn.REPOSITORY.Evaluation.*;
+import com.example.edulearn.REPOSITORY.Repetition.RepetitionRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.EleveRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.EnseignantRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
@@ -36,11 +39,27 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
     @Autowired
     private EnseignantRepository enseignantRepository;
     @Autowired
+    private RepetitionRepository repetitionRepository;
+    @Autowired
     private EleveRepository eleveRepository;
     @Autowired
     private MatiereRepository matiereRepository;
     @Autowired
     private TypeEvaluationRepository typeEvaluationRepository;
+
+    @Override
+    public ResponseEntity<List<TypeEvaluation>> findAllTypeEvaluation() {
+        return ResponseEntity.ok(
+                this.typeEvaluationRepository.findAll()
+        );
+    }
+
+    @Override
+    public ResponseEntity<ServerResponse> creationTypeEvaluation(String typeevaluation) throws JsonProcessingException {
+        TypeEvaluation typeEvaluation = new ObjectMapper().readValue(typeevaluation, TypeEvaluation.class);
+        this.typeEvaluationRepository.save(typeEvaluation);
+        return ResponseEntity.ok(new ServerResponse("Type evaluation created successfully", true));
+    }
 
     @Override
     public ResponseEntity<List<Composition>> findAllCompositionByEnseignant(Integer id) {
@@ -52,10 +71,10 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
     }
 
     @Override
-    public ResponseEntity<List<Composition>> findAllCompositionByMatiere(Integer id) {
+    public ResponseEntity<List<Composition>> findAllCompositionByRepetition(Integer id) {
         return ResponseEntity.ok(
-                this.compositionRepository.findByMatiere(
-                        this.matiereRepository.findById(id).orElse(null)
+                this.compositionRepository.findByRepetition(
+                        this.repetitionRepository.findById(id).orElse(null)
                 )
         );
     }
@@ -66,12 +85,13 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
 
         Composition compositionDB = new Composition();
 
-        compositionDB.setEnseignant(this.enseignantRepository.findById(compositionDTO.getEnseignant()).orElse(null));
+        compositionDB.setRepetition(this.repetitionRepository.findById(compositionDTO.getRepetition()).orElse(null));
         compositionDB.setDescription(compositionDTO.getDescription());
-        compositionDB.setMatiere(this.matiereRepository.findById(compositionDTO.getMatiere()).orElse(null));
         compositionDB.setTypeEvaluation(this.typeEvaluationRepository.findById(compositionDTO.getTypeEvaluation()).orElse(null));
-        compositionDB.setDuree(LocalTime.parse(compositionDTO.getDuree()));
+        compositionDB.setDuree(compositionDTO.getDuree());
         compositionDB.setActive(true);
+        compositionDB.setArchived(false); //Par defaut , nom archivé
+        compositionDB.setDateCreation(LocalDate.now());
 
         this.compositionRepository.save(compositionDB);
 
@@ -80,8 +100,32 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
     }
 
     @Override
-    public ResponseEntity<ServerResponse> updateComposition(String composition) {
-        return null;
+    public ResponseEntity<ServerResponse> updateComposition(String composition) throws JsonProcessingException {
+        CompositionDTO compositionDTO = new ObjectMapper().readValue(composition, CompositionDTO.class);
+
+        Composition compositionSaved = this.compositionRepository.findById(compositionDTO.getId()).orElse(null);
+
+        if (Objects.nonNull(compositionSaved)){
+
+            Composition compositionDB = new Composition();
+
+            compositionDB.setId(compositionSaved.getId());
+            compositionDB.setRepetition(this.repetitionRepository.findById(compositionDTO.getRepetition()).orElse(null));
+            compositionDB.setDescription(compositionDTO.getDescription());
+            compositionDB.setTypeEvaluation(this.typeEvaluationRepository.findById(compositionDTO.getTypeEvaluation()).orElse(null));
+            compositionDB.setDuree(compositionDTO.getDuree());
+            compositionDB.setActive(true);
+            compositionDB.setArchived(false); //Par defaut , nom archivé
+            compositionDB.setDateCreation(LocalDate.now());
+
+            this.compositionRepository.save(compositionDB);
+
+            return ResponseEntity.ok(new ServerResponse("Compisition has been updated", true));
+
+        }else {
+            return ResponseEntity.ok(new ServerResponse("Compistiion not found ", false));
+
+        }
     }
 
     @Override
@@ -99,7 +143,7 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
     }
 
     @Override
-    public ResponseEntity<ServerResponse> creationQuestion(String question) throws JsonProcessingException {
+    public ResponseEntity<Integer> creationQuestion(String question) throws JsonProcessingException {
         QuestionDTO questionDTO = new ObjectMapper().readValue(question, QuestionDTO.class);
         Question questionDB = new Question();
 
@@ -109,7 +153,9 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
 
         this.questionRepository.save(questionDB);
 
-        return ResponseEntity.ok(new ServerResponse("Question created successfully", true));
+        Question questionSaved = this.questionRepository.findTopByOrderByIdDesc();
+
+        return ResponseEntity.ok(questionSaved.getId());
     }
 
     @Override
@@ -139,7 +185,7 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
         ReponsePossible reponsePossibleDB = new ReponsePossible();
 
         reponsePossibleDB.setReponse(reponsePossibleDTO.getReponse());
-        reponsePossibleDB.setCorrecte(reponsePossibleDTO.getCorrecte());
+        reponsePossibleDB.setCorrecte(false);
         reponsePossibleDB.setQuestion(this.questionRepository.findById(reponsePossibleDTO.getQuestion()).orElse(null));
 
         this.reponsePossibleRepository.save(reponsePossibleDB);
@@ -149,6 +195,29 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
     @Override
     public ResponseEntity<ServerResponse> updateReponsePossible(String reponsepossible) {
         return null;
+    }
+
+    @Override
+    public ResponseEntity<ServerResponse> validateReponse(Integer id) {
+        ReponsePossible reponsePossible = this.reponsePossibleRepository.findById(id).orElse(null);
+        if (Objects.nonNull(reponsePossible)){
+            if (reponsePossible.getCorrecte()){
+                return ResponseEntity.ok(new ServerResponse("Reponse possible is already validated", false));
+            }else {
+                //On doit d'abord invalider les autres reponses possibles de la question
+                List<ReponsePossible> reponsePossibles = this.reponsePossibleRepository.findByQuestion(reponsePossible.getQuestion());
+                for (ReponsePossible rp : reponsePossibles){
+                    rp.setCorrecte(false);
+                    this.reponsePossibleRepository.save(rp);
+                }
+            }
+            reponsePossible.setCorrecte(true);
+            this.reponsePossibleRepository.save(reponsePossible);
+
+            return ResponseEntity.ok(new ServerResponse("Reponse possible validated successfully", true));
+        }else {
+            return ResponseEntity.ok(new ServerResponse("Reponse possible not found", false));
+        }
     }
 
     @Override
@@ -170,13 +239,20 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
         EvaluationDTO evaluationDTO = new ObjectMapper().readValue(evaluation, EvaluationDTO.class);
         Evaluation evaluationDB = new Evaluation();
         evaluationDB.setComposition(this.compositionRepository.findById(evaluationDTO.getComposition()).orElse(null));
-        evaluationDB.setEleve(this.eleveRepository.findById(evaluationDTO.getEleve()).orElse(null));
         evaluationDB.setNote(evaluationDTO.getNote());
         evaluationDB.setStartTime(evaluationDTO.getStartTime());
         evaluationDB.setEndTime(evaluationDTO.getEndTime());
         evaluationDB.setCompleted(false);
         this.evaluationRepository.save(evaluationDB);
         Evaluation evaluationSaved = this.evaluationRepository.findTopByOrderByIdDesc();
+
+        //Modifie l'etat de la composition pour signaler qu'on a deja compose
+        Composition compositionCorrespondante = this.compositionRepository.findById(evaluationDTO.getComposition()).orElse(null);
+        if (Objects.nonNull(compositionCorrespondante)){
+            compositionCorrespondante.setArchived(true);
+            this.compositionRepository.save(compositionCorrespondante);
+        }
+
         return ResponseEntity.ok(evaluationSaved.getId());
     }
 

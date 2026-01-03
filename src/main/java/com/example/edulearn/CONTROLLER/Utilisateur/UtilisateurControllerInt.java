@@ -4,6 +4,7 @@ import com.example.edulearn.DTO.Utilisateur.AuthData;
 import com.example.edulearn.ENTITY.Response.ServerResponse;
 import com.example.edulearn.ENTITY.Utilisateur.Eleve.Eleve;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ import java.util.List;
 public interface UtilisateurControllerInt {
     //AUTH
     @PostMapping("/login")
-    ResponseEntity<AuthData> loginUser(@RequestParam("auth") String auth);
+    ResponseEntity<AuthData> loginUser(@RequestParam("auth") String auth) throws JsonProcessingException;
     //Enseignant
     @GetMapping("/enseignant/all")
     ResponseEntity<List<Enseignant>> findAllEnseignant();

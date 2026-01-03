@@ -8,15 +8,17 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
 public class CompositionDTO {
     private Integer id ;
     private String description ;
-    private String duree ;
+    private Integer duree ;
     private Boolean active ;
+    private String dateCreation ;
+    private Boolean archived ;
     private Integer typeEvaluation;
-    private Integer enseignant;
-    private Integer matiere;
+    private Integer repetition;
 }
