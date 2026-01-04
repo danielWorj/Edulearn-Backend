@@ -61,6 +61,12 @@ public class IaService {
         return completion.get("completion");
     }
 
+    public String assistantTextuel(String prompt){
+        var completion = Map.of("completion", Objects.requireNonNull(chatClient.prompt().user(prompt).call().content()));
+
+        return completion.get("completion");
+    }
+
 
 
     public String synthesizeOffreForPrompt(OffreRepetition job) {
@@ -77,5 +83,8 @@ public class IaService {
 
         return prompt.toString();
     }
+
+
+
 
 }
