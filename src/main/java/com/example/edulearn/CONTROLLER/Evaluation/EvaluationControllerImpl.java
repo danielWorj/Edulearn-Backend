@@ -190,6 +190,15 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
     }
 
     @Override
+    public ResponseEntity<ReponsePossible> findReponsePossibleIsTrue(Integer id) {
+        return ResponseEntity.ok(
+                this.reponsePossibleRepository.findByQuestionAndCorrecteIsTrue(
+                        this.questionRepository.findById(id).orElse(null)
+                )
+        );
+    }
+
+    @Override
     public ResponseEntity<ServerResponse> creationReponsePossible(String reponsepossible) throws JsonProcessingException {
         ReponsePossibleDTO reponsePossibleDTO = new ObjectMapper().readValue(reponsepossible, ReponsePossibleDTO.class);
 
@@ -246,13 +255,21 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
     }
 
     @Override
+    public ResponseEntity<Evaluation> findAllEvaluationByComposition(Integer id) {
+        return ResponseEntity.ok(
+                this.evaluationRepository.findByComposition(
+                        this.compositionRepository.findById(id).orElse(null)
+                )
+        );
+    }
+
+    @Override
     public ResponseEntity<Integer> creationEvaluation(String evaluation) throws JsonProcessingException {
         EvaluationDTO evaluationDTO = new ObjectMapper().readValue(evaluation, EvaluationDTO.class);
         Evaluation evaluationDB = new Evaluation();
         evaluationDB.setComposition(this.compositionRepository.findById(evaluationDTO.getComposition()).orElse(null));
         evaluationDB.setNote(evaluationDTO.getNote());
-        evaluationDB.setStartTime(evaluationDTO.getStartTime());
-        evaluationDB.setEndTime(evaluationDTO.getEndTime());
+        evaluationDB.setStartTime(LocalTime.now());
         evaluationDB.setCompleted(false);
         this.evaluationRepository.save(evaluationDB);
         Evaluation evaluationSaved = this.evaluationRepository.findTopByOrderByIdDesc();
@@ -285,6 +302,15 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
                 )
         );
 
+    }
+
+    @Override
+    public ResponseEntity<ReponseEleve> findReponseEleveByQuestion(Integer id) {
+        return ResponseEntity.ok(
+                this.reponseEleveRepository.findByQuestion(
+                        this.questionRepository.findById(id).orElse(null)
+                )
+        );
     }
 
     @Override
@@ -363,6 +389,7 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
                     tentativeEvaluationToUpdate.getStartTime().plusMinutes(tentativeEvaluationToUpdate.getComposition().getDuree())
             );
             tentativeEvaluationToUpdate.setNote(noteFinal);
+            System.out.println("la note finale est :"+noteFinal);
             this.evaluationRepository.save(tentativeEvaluationToUpdate);
         }else {
             System.out.println("tentative evaluation : not found");
@@ -370,5 +397,25 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
 
 
         return ResponseEntity.ok(noteFinal);
+    }
+
+    @Override
+    public ResponseEntity<ServerResponse> nettoyageTentativeEvaluation(Integer id) {
+
+        //1-Appel de la liste des reponses de l'eleve a cette evaluation
+        List<ReponseEleve> reponseEleves = this.reponseEleveRepository.findByEvaluation(this.evaluationRepository.findById(id).orElse(null));
+
+        // 2. Supprimer toutes les réponses en une seule fois (plus efficace)
+        if (!reponseEleves.isEmpty()) {
+            reponseEleveRepository.deleteAll(reponseEleves);
+        }
+
+        // 3. Supprimer l'évaluation
+        evaluationRepository.deleteById(id);
+
+        // 4. Retourner la réponse
+        return ResponseEntity.ok(
+                new ServerResponse("L'évaluation a bien été nettoyée", true)
+        );
     }
 }

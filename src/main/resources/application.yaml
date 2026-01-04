@@ -1,6 +1,6 @@
 
 #Pour deploiement
-#
+
 spring:
   application:
     name: edulearn

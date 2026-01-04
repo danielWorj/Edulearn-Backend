@@ -51,6 +51,8 @@ public interface EvaluationControllerInt {
 
     @GetMapping("/reponse-possible/all/byquestion/{id}")
     ResponseEntity<List<ReponsePossible>> findAllReponsePossibleByQuestion(@PathVariable Integer id);
+    @GetMapping("/reponse-possible/istrue/byquestion/{id}")
+    ResponseEntity<ReponsePossible> findReponsePossibleIsTrue(@PathVariable Integer id);
     @PostMapping("/reponse-possible/create")
     ResponseEntity<ServerResponse> creationReponsePossible(@RequestParam("reponsepossible") String reponsepossible) throws JsonProcessingException;
     @PostMapping("/reponse-possible/update")
@@ -64,6 +66,8 @@ public interface EvaluationControllerInt {
 
     @GetMapping("/tentative-evaluation/all/byeleve/{id}")
     ResponseEntity<List<Evaluation>> findAllEvaluationByEleve(@PathVariable Integer id);
+    @GetMapping("/tentative-evaluation/all/bycomposition/{id}")
+    ResponseEntity<Evaluation> findAllEvaluationByComposition(@PathVariable Integer id);
     @PostMapping("/tentative-evaluation/create")
     ResponseEntity<Integer> creationEvaluation(@RequestParam("evaluation") String evaluation) throws JsonProcessingException;
     @PostMapping("/tentative-evaluation/update")
@@ -73,15 +77,19 @@ public interface EvaluationControllerInt {
     //Note finale de la composition
     @GetMapping("/tentative-evaluation/notefinale/bytentative/{id}")
     ResponseEntity<Double> calculDeLanoteFinale(@PathVariable Integer id);
-
+    @GetMapping("/tentative-evaluation/nettoyage/{id}")
+    ResponseEntity<ServerResponse> nettoyageTentativeEvaluation(@PathVariable Integer id);
     //CRUD Reponse Eleve
-    @GetMapping("/reponseeleve/all/byEvaluation/{id}")
+    @GetMapping("/reponse-eleve/all/byEvaluation/{id}")
     ResponseEntity<List<ReponseEleve>> findAllReponseEleveByEvaluation(@PathVariable Integer id);
-    @PostMapping("/reponseeleve/create")
+    @GetMapping("/reponse-eleve/byquestion/{id}")
+    ResponseEntity<ReponseEleve> findReponseEleveByQuestion(@PathVariable Integer id);
+
+    @PostMapping("/reponse-eleve/create")
     ResponseEntity<ServerResponse> creationReponseEleve(@RequestParam("reponseeleve") String reponseeleve) throws JsonProcessingException;
-    @PostMapping("/reponseeleve/update")
+    @PostMapping("/reponse-eleve/update")
     ResponseEntity<ServerResponse> updateReponseEleve(@RequestParam("reponseeleve") String reponseeleve) throws JsonProcessingException;
-    @GetMapping("/reponseeleve/delete/{id}")
+    @GetMapping("/reponse-eleve/delete/{id}")
     ResponseEntity<ServerResponse> deleteReponseEleve(@PathVariable Integer id);
 
   }

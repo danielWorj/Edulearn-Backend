@@ -10,6 +10,6 @@ import java.util.List;
 public interface ReponseEleveRepository extends JpaRepository<ReponseEleve,Integer> {
     ReponseEleve findTopByOrderByIdDesc();
     List<ReponseEleve> findByEvaluation(Evaluation evaluation);
-    List<ReponseEleve> findByQuestion(Question question);
+    ReponseEleve findByQuestion(Question question);
     List<ReponseEleve> findByEvaluationAndQuestion(Evaluation evaluation, Question question);
 }

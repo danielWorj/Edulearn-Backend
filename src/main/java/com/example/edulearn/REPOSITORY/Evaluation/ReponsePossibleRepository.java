@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ReponsePossibleRepository extends JpaRepository<ReponsePossible,Integer> {
     List<ReponsePossible> findByQuestion(Question question);
+    ReponsePossible findByQuestionAndCorrecteIsTrue(Question question);
 }
