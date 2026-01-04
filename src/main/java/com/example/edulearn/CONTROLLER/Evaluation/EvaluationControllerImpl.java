@@ -269,6 +269,7 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
         Evaluation evaluationDB = new Evaluation();
         evaluationDB.setComposition(this.compositionRepository.findById(evaluationDTO.getComposition()).orElse(null));
         evaluationDB.setNote(evaluationDTO.getNote());
+        evaluationDB.setDateCreated(LocalDate.now());
         evaluationDB.setStartTime(LocalTime.now());
         evaluationDB.setCompleted(false);
         this.evaluationRepository.save(evaluationDB);
@@ -416,6 +417,16 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
         // 4. Retourner la réponse
         return ResponseEntity.ok(
                 new ServerResponse("L'évaluation a bien été nettoyée", true)
+        );
+    }
+
+    @Override
+    public ResponseEntity<List<Evaluation>> findEvaluationForEleveAndMatiere(Integer idE, Integer idM) {
+        return ResponseEntity.ok(
+                this.evaluationRepository.findByEleveAndMatiere(
+                        this.eleveRepository.findById(idE).orElse(null),
+                        this.matiereRepository.findById(idM).orElse(null)
+                )
         );
     }
 }

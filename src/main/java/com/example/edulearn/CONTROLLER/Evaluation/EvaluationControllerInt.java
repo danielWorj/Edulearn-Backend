@@ -79,6 +79,8 @@ public interface EvaluationControllerInt {
     ResponseEntity<Double> calculDeLanoteFinale(@PathVariable Integer id);
     @GetMapping("/tentative-evaluation/nettoyage/{id}")
     ResponseEntity<ServerResponse> nettoyageTentativeEvaluation(@PathVariable Integer id);
+    @GetMapping("/tentative-evaluation/findby/eleve/matiere/{idE}/{idM}")
+    ResponseEntity<List<Evaluation>> findEvaluationForEleveAndMatiere(@PathVariable Integer idE , @PathVariable Integer idM);
     //CRUD Reponse Eleve
     @GetMapping("/reponse-eleve/all/byEvaluation/{id}")
     ResponseEntity<List<ReponseEleve>> findAllReponseEleveByEvaluation(@PathVariable Integer id);

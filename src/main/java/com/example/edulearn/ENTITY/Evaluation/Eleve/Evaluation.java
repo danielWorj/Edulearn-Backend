@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
@@ -17,6 +18,7 @@ public class Evaluation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id ;
+    private LocalDate dateCreated ;
     private LocalTime startTime ;
     private LocalTime endTime ;
     private Double note ;
