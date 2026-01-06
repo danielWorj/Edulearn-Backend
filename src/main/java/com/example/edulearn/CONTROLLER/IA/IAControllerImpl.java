@@ -1,6 +1,9 @@
 package com.example.edulearn.CONTROLLER.IA;
 
+import com.example.edulearn.DTO.IA.PromptDTO;
 import com.example.edulearn.SERVICE.IaService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -42,13 +45,17 @@ public class IAControllerImpl implements IaControllerInt{
                 "---\n" +
                 "\n" +
                 "N'hésite pas à développer certains points selon les exigences de ton devoir et à ajouter des références si nécessaire.";
+
+            System.out.println(rep);
         return ResponseEntity.ok(rep);
     }
 
     @Override
-    public ResponseEntity<String> assistanceTextuelle(String prompt) {
+    public ResponseEntity<String> assistanceTextuelle(String prompt) throws JsonProcessingException {
+        PromptDTO promptDTO = new ObjectMapper().readValue(prompt, PromptDTO.class);
+        String reponse = this.iaService.assistantTextuel(promptDTO.getPrompt());
+        System.out.println(reponse);
+        return ResponseEntity.ok(reponse);
 
-
-        return null;
     }
 }
