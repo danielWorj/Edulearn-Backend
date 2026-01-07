@@ -19,6 +19,11 @@ public interface CompositionRepository extends JpaRepository<Composition,Integer
     List<Composition> findByRepetition(Repetition repetition);
 
     List<Composition> findByMatiere(Matiere matiere);
+    @Query(value = "SELECT c FROM Composition c JOIN c.repetition r JOIN r.offreRepetition o JOIN o.eleve e WHERE e.id=:id AND c.archived=true")
+    List<Composition> findAllCompositionNonArchivedByEleve(@Param("id") Integer id);
+
+    @Query(value = "SELECT c FROM Composition c JOIN c.matiere m JOIN c.repetition r WHERE m.id=:id AND c.archived=true")
+    List<Composition> findAllCompositionNonArchivedByMatiere(@Param("id") Integer id);
 
 
 }

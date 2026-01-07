@@ -89,6 +89,20 @@ public class EvaluationControllerImpl implements EvaluationControllerInt{
     }
 
     @Override
+    public ResponseEntity<List<Composition>> findAllCompositionNonArchivedByEleve(Integer id) {
+        return ResponseEntity.ok(
+                this.compositionRepository.findAllCompositionNonArchivedByEleve(id)
+        );
+    }
+
+    @Override
+    public ResponseEntity<List<Composition>> findAllCompositionNonArchivedByMatiere(Integer id) {
+        return ResponseEntity.ok(
+                this.compositionRepository.findAllCompositionNonArchivedByMatiere(id)
+        );
+    }
+
+    @Override
     public ResponseEntity<Integer> creationComposition(String composition) throws JsonProcessingException {
         CompositionDTO compositionDTO = new ObjectMapper().readValue(composition, CompositionDTO.class);
 

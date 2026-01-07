@@ -29,13 +29,17 @@ public interface EvaluationControllerInt {
     ResponseEntity<List<Composition>> findAllCompositionByRepetition(@PathVariable Integer id);
     @GetMapping("/composition/all/bymatiere/{id}")
     ResponseEntity<List<Composition>> findAllCompositionByMatiere(@PathVariable Integer id);
-
+    @GetMapping("/composition/nonarchived/byeleve/{id}")
+    ResponseEntity<List<Composition>> findAllCompositionNonArchivedByEleve(@PathVariable Integer id);
+    @GetMapping("/composition/nonarchived/bymatiere/{id}")
+    ResponseEntity<List<Composition>> findAllCompositionNonArchivedByMatiere(@PathVariable Integer id);
     @PostMapping("/composition/create")
     ResponseEntity<Integer> creationComposition(@RequestParam("composition") String composition) throws JsonProcessingException;
     @PostMapping("/composition/update")
     ResponseEntity<ServerResponse> updateComposition(@RequestParam("composition") String composition) throws JsonProcessingException;
     @GetMapping("/composition/delete/{id}")
     ResponseEntity<ServerResponse> deleteComposition(@PathVariable Integer id);
+
 
     //CRUD Questions
     @GetMapping("/question/all/bycomposition/{id}")

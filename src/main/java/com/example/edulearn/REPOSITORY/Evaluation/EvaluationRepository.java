@@ -14,6 +14,7 @@ public interface EvaluationRepository extends JpaRepository<Evaluation,Integer> 
     @Query(value = "SELECT e FROM Evaluation e JOIN e.composition c JOIN c.repetition r JOIN r.offreRepetition o JOIN o.eleve el WHERE el=:eleve")
     List<Evaluation> findByEleve(@Param("eleve") Eleve eleve);
 
+
     @Query(value = "SELECT e FROM Evaluation e JOIN e.composition c JOIN c.matiere m JOIN c.repetition r JOIN r.offreRepetition o JOIN o.eleve el WHERE el=:eleve AND m=:matiere")
     List<Evaluation> findByEleveAndMatiere(@Param("eleve") Eleve eleve , @Param("matiere")Matiere matiere);
     Evaluation findByComposition(Composition composition);
