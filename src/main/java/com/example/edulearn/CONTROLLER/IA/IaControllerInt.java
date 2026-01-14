@@ -11,4 +11,7 @@ public interface IaControllerInt {
     ResponseEntity<String> assistantIA();
     @PostMapping("/assistant-textuel")
     ResponseEntity<String> assistanceTextuelle(@RequestParam("prompt") String prompt) throws JsonProcessingException;
+
+    @GetMapping("/score")
+    ResponseEntity<String> getScoreCorrespondance();
 }

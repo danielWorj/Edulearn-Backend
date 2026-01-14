@@ -49,7 +49,6 @@ public interface UtilisateurControllerInt {
     ResponseEntity<Integer> createEleve(@Param("eleve") String eleve,@RequestParam("photo") MultipartFile photo) throws IOException;
     @GetMapping("/eleve/allbyparent/{id}")
     ResponseEntity<List<Eleve>> findByParent(@PathVariable Integer id);
-
     @GetMapping("/eleve/countbyParent/{id}")
     ResponseEntity<Long> countByParent(@PathVariable Integer id);
 

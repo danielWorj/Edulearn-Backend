@@ -6,6 +6,7 @@ import com.example.edulearn.ENTITY.Repetition.MatiereRepetition;
 import com.example.edulearn.ENTITY.Repetition.OffreRepetition;
 import com.example.edulearn.ENTITY.Repetition.Repetition;
 import com.example.edulearn.ENTITY.Response.ServerResponse;
+import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public interface RepetitionController {
 
     //Offre
     @PostMapping("/offre/create")
-    ResponseEntity<ServerResponse> createOffreRepetition(@RequestParam("offrerepetition") String offrerepetition) throws JsonProcessingException;
+    ResponseEntity<List<Enseignant>> createOffreRepetition(@RequestParam("offrerepetition") String offrerepetition) throws JsonProcessingException;
     @PostMapping("/offre/update")
     ResponseEntity<ServerResponse> updateOffreRepetition(@RequestParam("offrerepetition") String offrerepetition) throws JsonProcessingException;
     @GetMapping("/offre/all")

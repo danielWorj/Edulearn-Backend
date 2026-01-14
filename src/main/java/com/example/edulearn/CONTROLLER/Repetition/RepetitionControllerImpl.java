@@ -10,6 +10,7 @@ import com.example.edulearn.ENTITY.Repetition.MatiereRepetition;
 import com.example.edulearn.ENTITY.Repetition.OffreRepetition;
 import com.example.edulearn.ENTITY.Repetition.Repetition;
 import com.example.edulearn.ENTITY.Response.ServerResponse;
+import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
 import com.example.edulearn.REPOSITORY.Academie.MatiereRepository;
 import com.example.edulearn.REPOSITORY.Repetition.HoraireRepetitionRepository;
 import com.example.edulearn.REPOSITORY.Repetition.MatiereRepetitionRepository;
@@ -161,7 +162,7 @@ public class RepetitionControllerImpl implements RepetitionController {
     }
 
     @Override
-    public ResponseEntity<ServerResponse> createOffreRepetition(String offrerepetition) throws JsonProcessingException {
+    public ResponseEntity<List<Enseignant>> createOffreRepetition(String offrerepetition) throws JsonProcessingException {
         ServerResponse serverResponse = new ServerResponse();
 
         OffreRepetitionDTO offreRepetitionDTO = new ObjectMapper().readValue(offrerepetition, OffreRepetitionDTO.class);
@@ -184,11 +185,15 @@ public class RepetitionControllerImpl implements RepetitionController {
 
         this.offreRepetitionRepository.save(offreRepetition);
 
-        serverResponse.setStatus(true);
+        //Apres la creation de l'offre , on recherche les enseignants qui peuvent y correspondre
 
-        serverResponse.setMessage("Offre de repetition cree");
+        List<Enseignant> enseignantsByProfil = this.enseignantRepository.findByProfilEnseignant(offreRepetition.getProfilEnseignant());
 
-        return ResponseEntity.ok(serverResponse);
+        //serverResponse.setStatus(true);
+
+        //serverResponse.setMessage("Offre de repetition cree");
+
+        return ResponseEntity.ok(enseignantsByProfil);
     }
 
     @Override

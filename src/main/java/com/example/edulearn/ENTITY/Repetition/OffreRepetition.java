@@ -3,6 +3,7 @@ package com.example.edulearn.ENTITY.Repetition;
 import com.example.edulearn.ENTITY.Academie.Filiere;
 import com.example.edulearn.ENTITY.Academie.Niveau;
 import com.example.edulearn.ENTITY.Utilisateur.Eleve.Eleve;
+import com.example.edulearn.ENTITY.Utilisateur.Enseignant.ProfilEnseignant;
 import com.example.edulearn.ENTITY.Utilisateur.Parent;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -30,4 +31,8 @@ public class OffreRepetition {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Eleve eleve ;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+    private ProfilEnseignant profilEnseignant ;
 }

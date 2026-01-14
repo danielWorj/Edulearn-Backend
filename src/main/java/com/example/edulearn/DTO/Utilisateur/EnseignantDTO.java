@@ -16,6 +16,7 @@ import java.time.LocalDate;
 public class EnseignantDTO  extends UtilisateurDTO{
     private Integer anneeexperience ;
     private String dateNaissance ;
+    private Integer statusEnseignant;
 
     private String bio ;
     private Integer tarifHoraire ;

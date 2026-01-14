@@ -1,7 +1,12 @@
 package com.example.edulearn.CONTROLLER.IA;
 
 import com.example.edulearn.DTO.IA.PromptDTO;
+import com.example.edulearn.ENTITY.Repetition.OffreRepetition;
+import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
+import com.example.edulearn.REPOSITORY.Repetition.OffreRepetitionRepository;
+import com.example.edulearn.REPOSITORY.Utilisateur.EnseignantRepository;
 import com.example.edulearn.SERVICE.IaService;
+import com.example.edulearn.SERVICE.MatchingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +17,12 @@ import org.springframework.stereotype.Controller;
 public class IAControllerImpl implements IaControllerInt{
     @Autowired
     private IaService iaService;
+    @Autowired
+    private MatchingService matchingService;
+    @Autowired
+    private OffreRepetitionRepository offreRepetitionRepository;
+    @Autowired
+    private EnseignantRepository enseignantRepository;
 
     @Override
     public ResponseEntity<String> assistantIA() {
@@ -57,5 +68,14 @@ public class IAControllerImpl implements IaControllerInt{
         System.out.println(reponse);
         return ResponseEntity.ok(reponse);
 
+    }
+
+    @Override
+    public ResponseEntity<String> getScoreCorrespondance() {
+        OffreRepetition job = this.offreRepetitionRepository.findById(2).orElse(null);
+        Enseignant enseignant = this.enseignantRepository.findById(2).orElse(null);
+
+        Integer score = this.matchingService.calculateMatching(enseignant,job);
+        return ResponseEntity.ok("Le score obtenu est :"+score);
     }
 }

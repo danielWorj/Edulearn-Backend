@@ -3,6 +3,7 @@ package com.example.edulearn.SERVICE;
 
 
 import com.example.edulearn.ENTITY.Repetition.OffreRepetition;
+import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
@@ -67,7 +68,19 @@ public class IaService {
         return completion.get("completion");
     }
 
+    public String getScoreMatching(OffreRepetition job , Enseignant enseignant){
+        String synthesizedOffre = synthesizeOffreForPrompt(job);
+        String synthesizedEnseignant = synthesizeEnseignantForPrompt(enseignant);
 
+        String fullPrompt = synthesizedOffre +
+                "\n\nTu es un système de matching pour une plateforme de cours à domicile. \n" +
+                "Analyse la compatibilité entre le profil de l'enseignant "+synthesizedEnseignant +"et l'offre de cours." + synthesizedEnseignant
+                +"Tu me renvoies juste le pourcentage de correspondance . Par exemple 75. Seulement le chiffre correspondant au pourcentage. ";
+        var completion = Map.of("completion", Objects.requireNonNull(chatClient.prompt().user(fullPrompt).call().content()));
+
+        return completion.get("completion");
+
+    }
 
     public String synthesizeOffreForPrompt(OffreRepetition job) {
 
@@ -79,12 +92,39 @@ public class IaService {
 
         // 2. Description
         prompt.append("**Description du poste :**\n");
-        prompt.append(job.getBio()).append("\n\n");
+        prompt.append(job.getBio());
+
+        // 3. Salaires
+        prompt.append("**Salaires min et max :**\n");
+        prompt.append(job.getSalaireMin());
+        prompt.append(job.getSalaireMax());
+
+        return prompt.toString();
+    }
+
+    public String synthesizeEnseignantForPrompt(Enseignant enseignant) {
+
+        StringBuilder prompt = new StringBuilder();
+
+        // 1. Informations principales
+        prompt.append("Voici un enseignant à analyser :\n\n");
+        prompt.append("**Bio:** \n").append(enseignant.getBio()).append("\n");
+        prompt.append("**Diplome:**\n").append(enseignant.getDiplome().getIntitule());
+        prompt.append("**Specialite du diplome**\n").append(enseignant.getSpecialite());
+
+
+        // 2. Description
+        prompt.append("**Tarif horaire :**\n");
+        prompt.append(enseignant.getTarifHoraire());
+        prompt.append("**Annee d'experience**\n");
+        prompt.append(enseignant.getAnneeexperience());
+
 
         return prompt.toString();
     }
 
 
+    // Dans votre service Angular ou composant
 
 
 }
