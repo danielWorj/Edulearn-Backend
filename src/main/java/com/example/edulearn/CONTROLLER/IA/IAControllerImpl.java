@@ -1,17 +1,25 @@
 package com.example.edulearn.CONTROLLER.IA;
 
+import com.example.edulearn.DTO.IA.MatchinResult;
 import com.example.edulearn.DTO.IA.PromptDTO;
+import com.example.edulearn.DTO.IA.ScoreMatch;
+import com.example.edulearn.ENTITY.Repetition.MatiereOffre;
 import com.example.edulearn.ENTITY.Repetition.OffreRepetition;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
+import com.example.edulearn.REPOSITORY.Repetition.MatiereOffreRepository;
 import com.example.edulearn.REPOSITORY.Repetition.OffreRepetitionRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.EnseignantRepository;
 import com.example.edulearn.SERVICE.IaService;
+import com.example.edulearn.SERVICE.MatchingConfirmService;
 import com.example.edulearn.SERVICE.MatchingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class IAControllerImpl implements IaControllerInt{
@@ -23,6 +31,10 @@ public class IAControllerImpl implements IaControllerInt{
     private OffreRepetitionRepository offreRepetitionRepository;
     @Autowired
     private EnseignantRepository enseignantRepository;
+    @Autowired
+    private MatchingConfirmService matchingConfirmService;
+    @Autowired
+    private MatiereOffreRepository matiereOffreRepetitionRepository;
 
     @Override
     public ResponseEntity<String> assistantIA() {
@@ -78,4 +90,107 @@ public class IAControllerImpl implements IaControllerInt{
         Integer score = this.matchingService.calculateMatching(enseignant,job);
         return ResponseEntity.ok("Le score obtenu est :"+score);
     }
+
+    @Override
+    public ResponseEntity<ScoreMatch> getTestScoreCorrespondance() throws Exception {
+        MatiereOffre mo = this.matiereOffreRepetitionRepository.findById(1).orElse(null);
+        Enseignant enseignant = this.enseignantRepository.findById(10).orElse(null);
+
+
+        ScoreMatch resultat = this.matchingConfirmService.calculerMatchingEnseignant(mo,enseignant);
+
+        System.out.println("Nom: " + resultat.getNomEnseignant());
+        System.out.println("Matière: " + resultat.getMatiere());
+        System.out.println("Description: " + resultat.getDescriptionOffre());
+        System.out.println("Score: " + resultat.getScoreRecupere());
+
+        return  ResponseEntity.ok(resultat);
+    }
+
+    @Override
+    public ResponseEntity<List<ScoreMatch>> getTestScoreCorrespondanceMultiple() throws Exception {
+        try {
+            // Récupère liste d'enseignants depuis la base
+            List<Enseignant> enseignants = enseignantRepository.findAll();
+            MatiereOffre mo = this.matiereOffreRepetitionRepository.findById(1).orElse(null);
+
+            // Calcul matching pour tous
+            List<ScoreMatch> resultats = matchingConfirmService.calculerMatchingMultipleEnseignant(
+                    mo,
+                    enseignants
+            );
+
+
+            // Affiche les 3 meilleurs
+            System.out.println("🏆 Top 3 enseignants :");
+            resultats.stream()
+                    .limit(3)
+                    .forEach(score -> {
+                        System.out.println(String.format(
+                                "  - %s : %.2f/100 (%s)",
+                                score.getNomEnseignant(),
+                                score.getScoreRecupere(),
+                                score.getDescriptionOffre()
+                        ));
+                    });
+
+            return ResponseEntity.ok(resultats);
+        } catch (Exception e) {
+            System.err.println("❌ Erreur matching : " + e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<ScoreMatch>> matchingOffreAndMultipleEnseignant(Integer id) {
+        try {
+            // Récupère liste d'enseignants depuis la base
+            MatiereOffre mo = this.matiereOffreRepetitionRepository.findById(id).orElse(null);
+            List<Enseignant> enseignants = enseignantRepository.findAll(); //Cette fonction va etre change pour selectionner les enseignants d'un certain profil
+
+
+            // Calcul matching pour tous
+            List<ScoreMatch> resultats = matchingConfirmService.calculerMatchingMultipleEnseignant(
+                    mo,
+                    enseignants
+            );
+
+            List<MatchinResult> matchinResults = new ArrayList<>();
+
+            //On reformate la facon de recevoir les resultats Enseignant et score
+//            for (int i = 0; i < resultats.size() ; i++) {
+//                //on parcours la liste
+//                System.out.println("nom enseignant i"+ enseignants.get(i).getNomComplet());
+//                System.out.println("nom enseignant resulta "+ resultats.get(i).getNomEnseignant());
+//
+//                if (enseignants.get(i).getNomComplet()==resultats.get(i).getNomEnseignant()){
+//                    matchinResults.add(new MatchinResult(enseignants.get(i), resultats.get(i).getScoreRecupere()));
+//                }
+//            }
+
+
+            // Affiche les 3 meilleurs
+            System.out.println("Top 3 enseignants :");
+
+            resultats.stream()
+                    .limit(3)
+                    .forEach(score -> {
+                        System.out.println(String.format(
+                                "  - %s : %.2f/100 (%s)",
+                                score.getNomEnseignant(),
+                                score.getScoreRecupere(),
+                                score.getDescriptionOffre()
+                        ));
+                    });
+
+            return ResponseEntity.ok(resultats);
+        } catch (Exception e) {
+            System.err.println("Erreur matching : " + e.getMessage());
+            return null;
+        }
+    }
+
+    // Exemple d'utilisation dans un contrôleur ou service
+
+
 }

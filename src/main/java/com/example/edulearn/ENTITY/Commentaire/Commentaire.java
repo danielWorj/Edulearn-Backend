@@ -14,6 +14,7 @@ public class Commentaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id ;
+    @Lob
     private String contenu ;
 
     @ManyToOne(fetch = FetchType.LAZY)

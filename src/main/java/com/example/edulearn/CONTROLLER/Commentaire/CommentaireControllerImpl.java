@@ -31,7 +31,7 @@ public class CommentaireControllerImpl implements CommentaireControllerInt {
 
     @Override
     public ResponseEntity<List<Commentaire>> findAllCommentaireByEnseignant(Integer id) {
-        return ResponseEntity.ok(this.commentaireRepository.findbyEnseignant(
+        return ResponseEntity.ok(this.commentaireRepository.findByEnseignant(
             this.enseignantRepository.findById(id).orElse(null)
         ));
     }

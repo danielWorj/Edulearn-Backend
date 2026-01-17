@@ -1,21 +1,12 @@
 package com.example.edulearn.CONTROLLER.Repetition;
 
-import com.example.edulearn.DTO.Repetition.HoraireRepetitionDTO;
-import com.example.edulearn.DTO.Repetition.MatiereRepetitionDTO;
-import com.example.edulearn.DTO.Repetition.OffreRepetitionDTO;
-import com.example.edulearn.DTO.Repetition.RepetitionDTO;
+import com.example.edulearn.DTO.Repetition.*;
 import com.example.edulearn.ENTITY.Academie.Matiere;
-import com.example.edulearn.ENTITY.Repetition.HoraireRepetition;
-import com.example.edulearn.ENTITY.Repetition.MatiereRepetition;
-import com.example.edulearn.ENTITY.Repetition.OffreRepetition;
-import com.example.edulearn.ENTITY.Repetition.Repetition;
+import com.example.edulearn.ENTITY.Repetition.*;
 import com.example.edulearn.ENTITY.Response.ServerResponse;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
 import com.example.edulearn.REPOSITORY.Academie.MatiereRepository;
-import com.example.edulearn.REPOSITORY.Repetition.HoraireRepetitionRepository;
-import com.example.edulearn.REPOSITORY.Repetition.MatiereRepetitionRepository;
-import com.example.edulearn.REPOSITORY.Repetition.OffreRepetitionRepository;
-import com.example.edulearn.REPOSITORY.Repetition.RepetitionRepository;
+import com.example.edulearn.REPOSITORY.Repetition.*;
 import com.example.edulearn.REPOSITORY.Utilisateur.EleveRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.EnseignantRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.ParentRepository;
@@ -51,6 +42,8 @@ public class RepetitionControllerImpl implements RepetitionController {
     private MatiereRepetitionRepository matiereRepetitionRepository;
     @Autowired
     private HoraireRepetitionRepository horaireRepetitionRepository;
+    @Autowired
+    private MatiereOffreRepository matiereOffreRepetitionRepository;
 
     @Override
     public ResponseEntity<Integer> createRepetition(String repetition) throws JsonProcessingException {
@@ -162,7 +155,7 @@ public class RepetitionControllerImpl implements RepetitionController {
     }
 
     @Override
-    public ResponseEntity<List<Enseignant>> createOffreRepetition(String offrerepetition) throws JsonProcessingException {
+    public ResponseEntity<Integer> createOffreRepetition(String offrerepetition) throws JsonProcessingException {
         ServerResponse serverResponse = new ServerResponse();
 
         OffreRepetitionDTO offreRepetitionDTO = new ObjectMapper().readValue(offrerepetition, OffreRepetitionDTO.class);
@@ -185,15 +178,18 @@ public class RepetitionControllerImpl implements RepetitionController {
 
         this.offreRepetitionRepository.save(offreRepetition);
 
+        OffreRepetition offreRepetitionLastSave = this.offreRepetitionRepository.findTopByOrderByIdDesc();
         //Apres la creation de l'offre , on recherche les enseignants qui peuvent y correspondre
 
-        List<Enseignant> enseignantsByProfil = this.enseignantRepository.findByProfilEnseignant(offreRepetition.getProfilEnseignant());
+        //List<Enseignant> enseignantsByProfil = this.enseignantRepository.findByProfilEnseignant(offreRepetition.getProfilEnseignant());
 
         //serverResponse.setStatus(true);
 
         //serverResponse.setMessage("Offre de repetition cree");
 
-        return ResponseEntity.ok(enseignantsByProfil);
+        //Apres creation de l'offre , on envoie l'id de l'offre cree pour y cree des matieres
+
+        return ResponseEntity.ok(offreRepetitionLastSave.getId());
     }
 
     @Override
@@ -270,6 +266,33 @@ public class RepetitionControllerImpl implements RepetitionController {
                 ),
                 HttpStatus.OK
         );
+    }
+
+    @Override
+    public ResponseEntity<List<MatiereOffre>> findAllMatiereOffreRepetition(Integer id) {
+        return ResponseEntity.ok(this.matiereOffreRepetitionRepository.findByOffreRepetition(
+                this.offreRepetitionRepository.findById(id).orElse(null)
+        ));
+    }
+
+    @Override
+    public ResponseEntity<ServerResponse> createMatiereOffreRepetition(String matiere) throws JsonProcessingException {
+        MatiereOffreRepetitionDTO matiereOffreRepetitionDTO = new  ObjectMapper().readValue(matiere, MatiereOffreRepetitionDTO.class);
+
+        System.out.println(matiereOffreRepetitionDTO.toString());
+        MatiereOffre matiereOffreRepetitionDB = new MatiereOffre();
+
+        matiereOffreRepetitionDB.setMatiere(
+                this.matiereRepository.findById(matiereOffreRepetitionDTO.getMatiere()).orElse(null)
+        );
+
+        matiereOffreRepetitionDB.setOffreRepetition(
+                this.offreRepetitionRepository.findById(matiereOffreRepetitionDTO.getOffreRepetition()).orElse(null)
+        );
+
+        this.matiereOffreRepetitionRepository.save(matiereOffreRepetitionDB);
+
+        return ResponseEntity.ok(new ServerResponse("Matiere offre repetition creee", true));
     }
 
 

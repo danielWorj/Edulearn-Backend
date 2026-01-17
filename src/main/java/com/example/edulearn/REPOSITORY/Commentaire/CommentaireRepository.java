@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CommentaireRepository extends JpaRepository<Commentaire,Integer> {
-    List<Commentaire> findbyEnseignant(Enseignant enseignant);
+    List<Commentaire> findByEnseignant(Enseignant enseignant);
     List<Commentaire> findByParent(Parent parent);
 }

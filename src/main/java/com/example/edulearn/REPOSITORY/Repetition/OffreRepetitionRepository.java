@@ -1,6 +1,7 @@
 package com.example.edulearn.REPOSITORY.Repetition;
 
 import com.example.edulearn.ENTITY.Repetition.OffreRepetition;
+import com.example.edulearn.ENTITY.Repetition.Repetition;
 import com.example.edulearn.ENTITY.Utilisateur.Eleve.Eleve;
 import com.example.edulearn.ENTITY.Utilisateur.Parent;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,7 @@ public interface OffreRepetitionRepository extends JpaRepository<OffreRepetition
     List<OffreRepetition> findByParent(Parent parent);
 
     Optional<OffreRepetition> findByCode(String code);
+
+    OffreRepetition findTopByOrderByIdDesc();
+
 }

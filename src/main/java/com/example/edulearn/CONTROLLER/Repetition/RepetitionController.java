@@ -1,10 +1,7 @@
 package com.example.edulearn.CONTROLLER.Repetition;
 
 import com.example.edulearn.ENTITY.Academie.Matiere;
-import com.example.edulearn.ENTITY.Repetition.HoraireRepetition;
-import com.example.edulearn.ENTITY.Repetition.MatiereRepetition;
-import com.example.edulearn.ENTITY.Repetition.OffreRepetition;
-import com.example.edulearn.ENTITY.Repetition.Repetition;
+import com.example.edulearn.ENTITY.Repetition.*;
 import com.example.edulearn.ENTITY.Response.ServerResponse;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,7 +37,7 @@ public interface RepetitionController {
 
     //Offre
     @PostMapping("/offre/create")
-    ResponseEntity<List<Enseignant>> createOffreRepetition(@RequestParam("offrerepetition") String offrerepetition) throws JsonProcessingException;
+    ResponseEntity<Integer> createOffreRepetition(@RequestParam("offrerepetition") String offrerepetition) throws JsonProcessingException;
     @PostMapping("/offre/update")
     ResponseEntity<ServerResponse> updateOffreRepetition(@RequestParam("offrerepetition") String offrerepetition) throws JsonProcessingException;
     @GetMapping("/offre/all")
@@ -53,4 +50,13 @@ public interface RepetitionController {
     ResponseEntity<ServerResponse> deleteRepetitionOffre(@PathVariable Integer id);
     @GetMapping("/offre/all/byparent/{id}")
     ResponseEntity<List<OffreRepetition>> findAllRepetitionOffreByParent(@PathVariable Integer id);
+
+
+    //Matiere Offre de Repetition
+
+    @GetMapping("/offre/matiere-offre/allbyoffre/{idO}")
+    ResponseEntity<List<MatiereOffre>> findAllMatiereOffreRepetition(@PathVariable Integer id);
+    @PostMapping("/offre/matiere-offre/create")
+    ResponseEntity<ServerResponse> createMatiereOffreRepetition(@RequestParam("matiere") String matiere) throws JsonProcessingException;
+
 }
