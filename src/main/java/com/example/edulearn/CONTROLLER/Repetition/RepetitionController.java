@@ -54,7 +54,7 @@ public interface RepetitionController {
 
     //Matiere Offre de Repetition
 
-    @GetMapping("/offre/matiere-offre/allbyoffre/{idO}")
+    @GetMapping("/offre/matiere-offre/allbyoffre/{id}")
     ResponseEntity<List<MatiereOffre>> findAllMatiereOffreRepetition(@PathVariable Integer id);
     @PostMapping("/offre/matiere-offre/create")
     ResponseEntity<ServerResponse> createMatiereOffreRepetition(@RequestParam("matiere") String matiere) throws JsonProcessingException;

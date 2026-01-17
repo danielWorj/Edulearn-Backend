@@ -27,5 +27,5 @@ public interface IaControllerInt {
 
     //Fonctions finales
     @GetMapping("/matching/offre-multienseignant/{id}")
-    ResponseEntity<List<ScoreMatch>> matchingOffreAndMultipleEnseignant(@PathVariable Integer id);
+    ResponseEntity<List<MatchinResult>> matchingOffreAndMultipleEnseignant(@PathVariable Integer id);
 }

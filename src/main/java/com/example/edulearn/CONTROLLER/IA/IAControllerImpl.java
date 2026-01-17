@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class IAControllerImpl implements IaControllerInt{
@@ -142,48 +143,68 @@ public class IAControllerImpl implements IaControllerInt{
     }
 
     @Override
-    public ResponseEntity<List<ScoreMatch>> matchingOffreAndMultipleEnseignant(Integer id) {
+    public ResponseEntity<List<MatchinResult>> matchingOffreAndMultipleEnseignant(Integer id) {
         try {
+            System.out.println("id recu :" + id);
             // Récupère liste d'enseignants depuis la base
-            MatiereOffre mo = this.matiereOffreRepetitionRepository.findById(id).orElse(null);
+            List<MatiereOffre> mo = this.matiereOffreRepetitionRepository.findByOffreRepetition(
+                    this.offreRepetitionRepository.findById(id).orElse(null)
+            );
+            System.out.println(mo);
             List<Enseignant> enseignants = enseignantRepository.findAll(); //Cette fonction va etre change pour selectionner les enseignants d'un certain profil
 
+            List<ScoreMatch> top3resultat = new ArrayList<ScoreMatch>();
 
-            // Calcul matching pour tous
-            List<ScoreMatch> resultats = matchingConfirmService.calculerMatchingMultipleEnseignant(
-                    mo,
-                    enseignants
-            );
+            if (mo.size()!=0){
+                // Calcul matching pour tous
+                List<ScoreMatch> resultats = matchingConfirmService.calculerMatchingMultipleEnseignant(
+                        mo.get(mo.size()==1?0:1),
+                        enseignants
+                );
 
-            List<MatchinResult> matchinResults = new ArrayList<>();
-
-            //On reformate la facon de recevoir les resultats Enseignant et score
-//            for (int i = 0; i < resultats.size() ; i++) {
-//                //on parcours la liste
-//                System.out.println("nom enseignant i"+ enseignants.get(i).getNomComplet());
-//                System.out.println("nom enseignant resulta "+ resultats.get(i).getNomEnseignant());
+                top3resultat = resultats.subList(0, Math.min(3, resultats.size()));
 //
-//                if (enseignants.get(i).getNomComplet()==resultats.get(i).getNomEnseignant()){
-//                    matchinResults.add(new MatchinResult(enseignants.get(i), resultats.get(i).getScoreRecupere()));
-//                }
-//            }
+                System.out.println("top 3 resultat: "+ top3resultat);
+                List<MatchinResult> matchinResults = new ArrayList<>();
+
+            }else{
+                System.out.println("Pas de matiere");
 
 
-            // Affiche les 3 meilleurs
-            System.out.println("Top 3 enseignants :");
+            }
+//            //On reformate la facon de recevoir les resultats Enseignant et score
+//
+//            //System.out.println(enseignants);
+            List<MatchinResult> matchinResults = new ArrayList<>();
+            for (ScoreMatch sc : top3resultat) {
+                //on parcours la liste des resultats
+                System.out.println("Nom recherche : "+ sc.getNomEnseignant());
+                Optional<Enseignant> enseignantTrouve = enseignants.stream()
+                        .filter(e-> e.getNomComplet().equals(sc.getNomEnseignant())).findFirst();
+                System.out.println("enseignant trouve :" + enseignantTrouve);
+                if (enseignantTrouve.isPresent()){
+                    matchinResults.add(new MatchinResult(enseignantTrouve.orElse(null), sc.getScoreRecupere()));
+                }
 
-            resultats.stream()
-                    .limit(3)
-                    .forEach(score -> {
-                        System.out.println(String.format(
-                                "  - %s : %.2f/100 (%s)",
-                                score.getNomEnseignant(),
-                                score.getScoreRecupere(),
-                                score.getDescriptionOffre()
-                        ));
-                    });
+            }
+//            System.out.println("MATCHING RESULT FINAL : ");
+//            System.out.println(matchinResults);
+//            // Affiche les 3 meilleurs
+//            System.out.println("Top 3 enseignants :");
+//
+//            resultats.stream()
+//                    .limit(3)
+//                    .forEach(score -> {
+//                        System.out.println(String.format(
+//                                "  - %s : %.2f/100 (%s)",
+//                                score.getNomEnseignant(),
+//                                score.getScoreRecupere(),
+//                                score.getDescriptionOffre()
+//                        ));
+//                    });
 
-            return ResponseEntity.ok(resultats);
+            return ResponseEntity.ok(matchinResults);
+            //return ResponseEntity.ok(null);
         } catch (Exception e) {
             System.err.println("Erreur matching : " + e.getMessage());
             return null;
