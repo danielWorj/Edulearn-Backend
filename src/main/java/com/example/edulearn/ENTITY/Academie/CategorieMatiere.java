@@ -16,4 +16,12 @@ public class CategorieMatiere {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Section section ;
+
+    public CategorieMatiere(String intitule, Section section) {
+        this.intitule = intitule;
+        this.section = section;
+    }
+
+    public CategorieMatiere() {
+    }
 }

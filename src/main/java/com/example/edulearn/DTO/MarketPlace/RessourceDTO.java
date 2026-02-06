@@ -6,6 +6,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class RessourceDTO {
     private Integer id;
@@ -13,6 +15,7 @@ public class RessourceDTO {
     private String description;
     private String url;
     private Integer prix ;
+    private String date ;
     private Integer enseignant ;
     private Integer typeResource ;
 }

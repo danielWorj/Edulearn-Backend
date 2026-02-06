@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Entity
 @Table
 @Data
@@ -17,7 +19,8 @@ public class Ressource {
     private String nom;
     private String description;
     private String url;
-    private Integer prix ; 
+    private Integer prix ;
+    private LocalDate date ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})

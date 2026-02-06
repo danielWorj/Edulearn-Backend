@@ -1,15 +1,18 @@
 package com.example.edulearn.CONTROLLER.General;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-import com.example.edulearn.ENTITY.Academie.Filiere;
-import com.example.edulearn.ENTITY.Academie.Matiere;
-import com.example.edulearn.ENTITY.Academie.Niveau;
+import com.example.edulearn.DTO.Academie.CategorieMatiereDTO;
+import com.example.edulearn.DTO.Academie.FiliereDTO;
+import com.example.edulearn.DTO.Academie.MatiereDTO;
+import com.example.edulearn.DTO.Academie.NiveauDTO;
+import com.example.edulearn.ENTITY.Academie.*;
+import com.example.edulearn.ENTITY.Utilisateur.Administrateur;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Diplome;
-import com.example.edulearn.REPOSITORY.Academie.FiliereRepository;
-import com.example.edulearn.REPOSITORY.Academie.MatiereRepository;
-import com.example.edulearn.REPOSITORY.Academie.NiveauRepository;
+import com.example.edulearn.REPOSITORY.Academie.*;
+import com.example.edulearn.REPOSITORY.Utilisateur.AdminRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.StatusEnseignantRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +20,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import com.example.edulearn.ENTITY.Academie.Section;
 import com.example.edulearn.ENTITY.Response.ServerResponse;
 import com.example.edulearn.ENTITY.Status.StatusEnseignant;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.ProfilEnseignant;
-import com.example.edulearn.REPOSITORY.Academie.SectionRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.DiplomeRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.ProfilEnseignantRepository;
 
@@ -44,6 +45,78 @@ public class GeneralControllerImpl implements GeneralControllerInt {
     private FiliereRepository filiereRepository;
     @Autowired
     private MatiereRepository matiereRepository;
+    @Autowired
+    private AdminRepository adminRepository;
+    @Autowired
+    private CategorieMatiereRepository categorieMatiereRepository;
+
+
+
+
+//    @Override
+//    public ResponseEntity<ServerResponse> pushSection() {
+//        Section section1 = new Section("Section Francophone");
+//        Section section2 = new Section("Section Anglophone");
+//
+//        this.sectionRepository.save(section1);
+//        this.sectionRepository.save(section2);
+//
+//        return ResponseEntity.ok(new ServerResponse("Sections poussées avec succès", true));
+//    }
+//
+//    @Override
+//    public ResponseEntity<ServerResponse> pushMatiere() {
+//        return null;
+//    }
+//
+//    @Override
+//    public ResponseEntity<ServerResponse> pushCategorieMatiere() {
+//        CategorieMatiere categorieMatiere1 = new CategorieMatiere("Matieres Scientifiques", this.sectionRepository.findById(1).orElse(null));
+//        return ResponseEntity.ok(new ServerResponse("Catégories de matières poussées avec succès", true));
+//    }
+//
+//    @Override
+//    public ResponseEntity<ServerResponse> pushProfilEnseignant() {
+//        return null;
+//    }
+//
+//    @Override
+//    public ResponseEntity<ServerResponse> pushStatusEnseignant() {
+//        return null;
+//    }
+//
+//    @Override
+//    public ResponseEntity<ServerResponse> pushDiplome() {
+//        return null;
+//    }
+//
+//    @Override
+//    public ResponseEntity<ServerResponse> pushNiveau() {
+//        return null;
+//    }
+//
+//    @Override
+//    public ResponseEntity<ServerResponse> pushFiliere() {
+//        return null;
+//    }
+
+    @Override
+    public ResponseEntity<ServerResponse> pushAdmin() {
+        Administrateur admin = new Administrateur();
+        admin.setNomComplet("Super Admin");
+        admin.setNiveau("Niveau max");
+        admin.setEmail("admin@gmail.com");
+        admin.setRole(1);
+        admin.setPassword("admin123");
+        admin.setDateInscription(LocalDate.now());
+        admin.setTelephone("678453456");
+        admin.setStatus(true);
+
+        this.adminRepository.save(admin);
+
+        return ResponseEntity.ok(new ServerResponse("Admin poussé avec succès", true));
+    }
+
     @Override
     public ResponseEntity<List<Section>> findAllSection() {
         
@@ -143,6 +216,19 @@ public class GeneralControllerImpl implements GeneralControllerInt {
     }
 
     @Override
+    public ResponseEntity<ServerResponse> createNiveau(String niveau) throws JsonProcessingException {
+        NiveauDTO niveauDTO = new  ObjectMapper().readValue(niveau, NiveauDTO.class);
+
+        Niveau niveauDB = new Niveau();
+
+        niveauDB.setIntitule(niveauDTO.getIntitule());
+        niveauDB.setSection(this.sectionRepository.findById(niveauDTO.getSection()).orElse(null));
+
+        this.niveauRepository.save(niveauDB);
+        return ResponseEntity.ok(new ServerResponse("Niveau ajoutée avec succes", true));
+    }
+
+    @Override
     public ResponseEntity<List<Filiere>> findAllFiliereBySection(Integer id) {
         return ResponseEntity.ok(
                 this.filiereRepository.findBySection(
@@ -151,6 +237,19 @@ public class GeneralControllerImpl implements GeneralControllerInt {
         );
     }
 
+    @Override
+    public ResponseEntity<ServerResponse> createFiliere(String filiere) throws JsonProcessingException {
+        FiliereDTO filiereDTO = new ObjectMapper().readValue(filiere,FiliereDTO.class);
+
+        Filiere filiereDB = new Filiere();
+
+        filiereDB.setSection(this.sectionRepository.findById(filiereDTO.getSection()).orElse(null));
+        filiereDB.setIntitule(filiereDTO.getIntitule());
+
+        this.filiereRepository.save(filiereDB);
+
+        return ResponseEntity.ok(new ServerResponse("Nouvelle filiere", true));
+    }
 
 
     @Override
@@ -172,6 +271,37 @@ public class GeneralControllerImpl implements GeneralControllerInt {
                         this.sectionRepository.findById(id).orElse(null)
                 )
         );
+    }
+
+    @Override
+    public ResponseEntity<ServerResponse> createMatiere(String matiere) throws JsonProcessingException {
+        MatiereDTO matiereDTO = new ObjectMapper().readValue(matiere, MatiereDTO.class);
+
+        Matiere matiereDB = new Matiere();
+
+        matiereDB.setIntitule(matiereDTO.getIntitule());
+        matiereDB.setCategorieMatiere(this.categorieMatiereRepository.findById(matiereDTO.getCategorieMatiere()).orElse(null));
+
+        this.matiereRepository.save(matiereDB);
+
+        return ResponseEntity.ok(new ServerResponse("Nouvelle categorie matiere", true));
+    }
+
+    @Override
+    public ResponseEntity<List<CategorieMatiere>> findAllCatMatiere() {
+        return ResponseEntity.ok(this.categorieMatiereRepository.findAll());
+    }
+
+    @Override
+    public ResponseEntity<ServerResponse> createCategorieMatiere(String categorie) throws JsonProcessingException {
+        CategorieMatiereDTO categorieMatiereDTO = new ObjectMapper().readValue(categorie, CategorieMatiereDTO.class);
+
+        CategorieMatiere categorieMatiere = new CategorieMatiere();
+        categorieMatiere.setIntitule(categorieMatiereDTO.getIntitule());
+        categorieMatiere.setSection(this.sectionRepository.findById(categorieMatiereDTO.getSection()).orElse(null));
+
+        this.categorieMatiereRepository.save(categorieMatiere);
+        return ResponseEntity.ok(new ServerResponse("nouvelle categorie matiere", true));
     }
 
 }

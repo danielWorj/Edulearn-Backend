@@ -1,9 +1,6 @@
 package com.example.edulearn.CONTROLLER.General;
 
-import com.example.edulearn.ENTITY.Academie.Filiere;
-import com.example.edulearn.ENTITY.Academie.Matiere;
-import com.example.edulearn.ENTITY.Academie.Niveau;
-import com.example.edulearn.ENTITY.Academie.Section;
+import com.example.edulearn.ENTITY.Academie.*;
 import com.example.edulearn.ENTITY.Response.ServerResponse;
 import com.example.edulearn.ENTITY.Status.StatusEnseignant;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Diplome;
@@ -18,6 +15,25 @@ import java.util.List;
 @RequestMapping("/edulearn/api/general")
 @CrossOrigin("*")
 public interface GeneralControllerInt {
+    //General
+    @GetMapping("/push/admin")
+    ResponseEntity<ServerResponse> pushAdmin();
+//    @GetMapping("/general/push/matiere")
+//    ResponseEntity<ServerResponse> pushMatiere();
+//    @GetMapping("/general/push/categoriematiere")
+//    ResponseEntity<ServerResponse> pushCategorieMatiere();
+//    @GetMapping("/general/push/profil-enseignant")
+//    ResponseEntity<ServerResponse> pushProfilEnseignant();
+//    @GetMapping("/general/push/status-enseignant")
+//    ResponseEntity<ServerResponse> pushStatusEnseignant();
+//    @GetMapping("/general/push/diplome")
+//    ResponseEntity<ServerResponse> pushDiplome();
+//    @GetMapping("/general/push/niveau")
+//    ResponseEntity<ServerResponse> pushNiveau();
+//    @GetMapping("/general/push/filiere")
+//    ResponseEntity<ServerResponse> pushFiliere();
+//
+
 
     //Section
     @GetMapping("/section/all")
@@ -44,12 +60,13 @@ public interface GeneralControllerInt {
     @GetMapping("/status-enseignant/delete/{id}")
     ResponseEntity<ServerResponse> deleteStatusEnseignant(@PathVariable Integer id);
 
+
     //Diplome
     @GetMapping("/diplome/all") 
     ResponseEntity<List<Diplome>> findAllDiplome();
     @PostMapping("/diplome/create")
     ResponseEntity<ServerResponse> createDiplome(@RequestParam("diplome") String diplome) throws JsonProcessingException;
-    @GetMapping("/diplome/delete/{id}") 
+    @GetMapping("/diplome/delete/{id}")
     ResponseEntity<ServerResponse> deleteDiplome(@PathVariable Integer id);
 
     //Niveau
@@ -58,15 +75,28 @@ public interface GeneralControllerInt {
 
     @GetMapping("/niveau/allbySection/{id}")
     ResponseEntity<List<Niveau>> findAllNiveauBySection(@PathVariable Integer id);
+    @PostMapping("/niveau/create")
+    ResponseEntity<ServerResponse> createNiveau(@RequestParam("niveau") String niveau) throws JsonProcessingException;
 
     //Filiere
     @GetMapping("/filiere/all")
     ResponseEntity<List<Filiere>> findAllFiliere();
     @GetMapping("/filiere/allbySection/{id}")
     ResponseEntity<List<Filiere>> findAllFiliereBySection(@PathVariable Integer id);
+    @PostMapping("/filiere/create")
+    ResponseEntity<ServerResponse> createFiliere(@RequestParam("filiere") String filiere) throws JsonProcessingException;
+
 
     //Matiere
     @GetMapping("/matiere/allbySection/{id}")
     ResponseEntity<List<Matiere>> findAllMatiereBySection(@PathVariable Integer id);
+    @PostMapping("/matiere/create")
+    ResponseEntity<ServerResponse> createMatiere(@RequestParam("matiere") String matiere) throws JsonProcessingException;
 
+
+    //CategorieMatiere
+    @GetMapping("/categoriematiere/all")
+    ResponseEntity<List<CategorieMatiere>> findAllCatMatiere();
+    @PostMapping("/categoriematiere/create")
+    ResponseEntity<ServerResponse> createCategorieMatiere(@RequestParam("categoriematiere") String categorie) throws JsonProcessingException;
 }
