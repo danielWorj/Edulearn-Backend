@@ -90,13 +90,17 @@ public interface GeneralControllerInt {
     //Matiere
     @GetMapping("/matiere/allbySection/{id}")
     ResponseEntity<List<Matiere>> findAllMatiereBySection(@PathVariable Integer id);
+    @GetMapping("/matiere/all")
+    ResponseEntity<List<Matiere>> findAllMatiere();
     @PostMapping("/matiere/create")
     ResponseEntity<ServerResponse> createMatiere(@RequestParam("matiere") String matiere) throws JsonProcessingException;
 
 
     //CategorieMatiere
-    @GetMapping("/categoriematiere/all")
+    @GetMapping("/categorie-matiere/all")
     ResponseEntity<List<CategorieMatiere>> findAllCatMatiere();
-    @PostMapping("/categoriematiere/create")
+    @GetMapping("/categorie-matiere/allbySection/")
+    ResponseEntity<List<CategorieMatiere>> findAllCatMatiereBySection(@PathVariable Integer id);
+    @PostMapping("/categorie-matiere/create")
     ResponseEntity<ServerResponse> createCategorieMatiere(@RequestParam("categoriematiere") String categorie) throws JsonProcessingException;
 }

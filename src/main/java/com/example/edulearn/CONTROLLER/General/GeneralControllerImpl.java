@@ -274,6 +274,11 @@ public class GeneralControllerImpl implements GeneralControllerInt {
     }
 
     @Override
+    public ResponseEntity<List<Matiere>> findAllMatiere() {
+        return ResponseEntity.ok(this.matiereRepository.findAll(Sort.by(Sort.Direction.DESC, "id")));
+    }
+
+    @Override
     public ResponseEntity<ServerResponse> createMatiere(String matiere) throws JsonProcessingException {
         MatiereDTO matiereDTO = new ObjectMapper().readValue(matiere, MatiereDTO.class);
 
@@ -290,6 +295,11 @@ public class GeneralControllerImpl implements GeneralControllerInt {
     @Override
     public ResponseEntity<List<CategorieMatiere>> findAllCatMatiere() {
         return ResponseEntity.ok(this.categorieMatiereRepository.findAll());
+    }
+
+    @Override
+    public ResponseEntity<List<CategorieMatiere>> findAllCatMatiereBySection(Integer id) {
+        return  ResponseEntity.ok(this.categorieMatiereRepository.findBySection(this.sectionRepository.findById(id).orElse(null)));
     }
 
     @Override
