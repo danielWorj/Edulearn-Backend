@@ -10,10 +10,10 @@ import com.example.edulearn.DTO.Academie.MatiereDTO;
 import com.example.edulearn.DTO.Academie.NiveauDTO;
 import com.example.edulearn.ENTITY.Academie.*;
 import com.example.edulearn.ENTITY.Utilisateur.Administrateur;
+import com.example.edulearn.ENTITY.Utilisateur.Directeur;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Diplome;
 import com.example.edulearn.REPOSITORY.Academie.*;
-import com.example.edulearn.REPOSITORY.Utilisateur.AdminRepository;
-import com.example.edulearn.REPOSITORY.Utilisateur.StatusEnseignantRepository;
+import com.example.edulearn.REPOSITORY.Utilisateur.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -24,8 +24,6 @@ import com.example.edulearn.ENTITY.Response.ServerResponse;
 import com.example.edulearn.ENTITY.Status.StatusEnseignant;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.ProfilEnseignant;
-import com.example.edulearn.REPOSITORY.Utilisateur.DiplomeRepository;
-import com.example.edulearn.REPOSITORY.Utilisateur.ProfilEnseignantRepository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -47,6 +45,8 @@ public class GeneralControllerImpl implements GeneralControllerInt {
     private MatiereRepository matiereRepository;
     @Autowired
     private AdminRepository adminRepository;
+    @Autowired
+    private DirecteurRepository directeurRepository;
     @Autowired
     private CategorieMatiereRepository categorieMatiereRepository;
 
@@ -102,17 +102,34 @@ public class GeneralControllerImpl implements GeneralControllerInt {
 
     @Override
     public ResponseEntity<ServerResponse> pushAdmin() {
-        Administrateur admin = new Administrateur();
-        admin.setNomComplet("Super Admin");
-        admin.setNiveau("Niveau max");
-        admin.setEmail("admin@gmail.com");
-        admin.setRole(1);
-        admin.setPassword("admin123");
-        admin.setDateInscription(LocalDate.now());
-        admin.setTelephone("678453456");
-        admin.setStatus(true);
+//        Administrateur admin = new Administrateur();
+//        admin.setNomComplet("Super Admin");
+//        admin.setNiveau("Niveau max");
+//        admin.setEmail("admin@gmail.com");
+//        admin.setRole(1);
+//        admin.setPassword("admin123");
+//        admin.setDateInscription(LocalDate.now());
+//        admin.setTelephone("678453456");
+//        admin.setLocalisation(""); // ou une valeur par défaut
+//        admin.setPhoto("");        // ou une valeur par défaut
+//        admin.setStatus(true);
+//
+//        this.adminRepository.save(admin);
 
-        this.adminRepository.save(admin);
+        Directeur directeur = new Directeur();
+
+        directeur.setNomComplet("Super Admin");
+        directeur.setEmail("admin@gmail.com");
+        directeur.setRole(1);
+        directeur.setPassword("admin123");
+        directeur.setDateInscription(LocalDate.now());
+        directeur.setTelephone("656787654");
+        directeur.setLocalisation("");
+        directeur.setPhoto("");
+        directeur.setStatus(true);
+
+        this.directeurRepository.save(directeur);
+
 
         return ResponseEntity.ok(new ServerResponse("Admin poussé avec succès", true));
     }

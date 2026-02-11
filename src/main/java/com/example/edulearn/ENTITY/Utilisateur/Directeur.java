@@ -8,10 +8,11 @@ import lombok.Data;
 @Entity
 @Table
 @Data
-@DiscriminatorValue("admin")
-public class Administrateur extends Utilisateur{
-    private String niveau ;
-    public Administrateur() {
+@DiscriminatorValue(value = "parent")
+public class Directeur extends Utilisateur{
+    private String profession ;
+    private String cni ;
 
+    public Directeur() {
     }
 }
