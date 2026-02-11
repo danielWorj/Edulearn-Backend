@@ -14,6 +14,7 @@ import com.example.edulearn.REPOSITORY.Academie.FiliereRepository;
 import com.example.edulearn.REPOSITORY.Academie.NiveauRepository;
 import com.example.edulearn.REPOSITORY.Academie.SectionRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.*;
+import com.example.edulearn.SERVICE.CloudinaryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -32,6 +33,8 @@ import java.util.Objects;
 
 @Controller
 public class UtilisateurControllerImpl implements UtilisateurControllerInt{
+    @Autowired
+    private CloudinaryService cloudinaryService;
     @Autowired
     private EnseignantRepository enseignantRepository ;
     @Autowired
@@ -150,13 +153,21 @@ public class UtilisateurControllerImpl implements UtilisateurControllerInt{
             //S'il n'y a pas de fichier
             fileName = photo.getOriginalFilename(); // le fichier prend le nom du client
 
-            enseignantDB.setPhoto(fileName);
+            //enseignantDB.setPhoto(fileName);
 
             System.out.println("le nom du fichier "+ fileName);
 
-            Path path = Paths.get(folderFile,fileName);
+            //Sauvegarde du fichier dans le dossier sur l'ordi
+//            Path path = Paths.get(folderFile,fileName);
+//
+//            photo.transferTo(path);
 
-            photo.transferTo(path);
+            //Sauvegarde du fichier sur cloudinary
+             String urlPhoto = this.cloudinaryService.uploadFile(photo);
+
+             System.out.println("URL de la photo sur Cloudinary: " + urlPhoto);
+
+             enseignantDB.setPhoto(urlPhoto);
 
             System.out.println("Photo enregistre en base de donnee");
         }
@@ -253,13 +264,21 @@ public class UtilisateurControllerImpl implements UtilisateurControllerInt{
             //S'il n'y a pas de fichier
             fileName = photo.getOriginalFilename(); // le fichier prend le nom du client
 
-            parentDB.setPhoto(fileName);
+            //Sauvegarde du fichier en local
+//            parentDB.setPhoto(fileName);
+//
+//            System.out.println("le nom du fichier "+ fileName);
+//
+//            Path path = Paths.get(folderFile,fileName);
+//
+//            photo.transferTo(path);
 
-            System.out.println("le nom du fichier "+ fileName);
+            //Sauvegarde du fichier sur cloudinary
+            String urlPhoto = this.cloudinaryService.uploadFile(photo);
 
-            Path path = Paths.get(folderFile,fileName);
+            System.out.println("URL de la photo sur Cloudinary: " + urlPhoto);
 
-            photo.transferTo(path);
+            parentDB.setPhoto(urlPhoto);
 
             System.out.println("photi enregistre en base de donnee");
         }
@@ -269,13 +288,22 @@ public class UtilisateurControllerImpl implements UtilisateurControllerInt{
             //S'il n'y a pas de fichier
             fileNameCNI = photo.getOriginalFilename(); // le fichier prend le nom du client
 
-            parentDB.setCni(fileNameCNI);
+            // Sauvegarde du fichier en local
+//            parentDB.setCni(fileNameCNI);
+//
+//            System.out.println("le nom du fichier "+ fileNameCNI);
+//
+//            Path path = Paths.get(folderFile,fileNameCNI);
+//
+//            cni.transferTo(path);
 
-            System.out.println("le nom du fichier "+ fileNameCNI);
+            //Sauvegarde du fichier sur cloudinary
+            //Sauvegarde du fichier sur cloudinary
+            String urlPhoto = this.cloudinaryService.uploadFile(photo);
 
-            Path path = Paths.get(folderFile,fileNameCNI);
+            System.out.println("URL de la photo sur Cloudinary: " + urlPhoto);
 
-            cni.transferTo(path);
+            parentDB.setPhoto(urlPhoto);
 
             System.out.println("diplome enregistre en base de donnee");
         }

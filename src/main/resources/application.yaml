@@ -1,5 +1,4 @@
 
-#Pour deploiement
 
 spring:
   application:
@@ -33,3 +32,7 @@ spring:
           smtp:
             starttls:
               enable: true
+cloudinary:
+  cloud-name: ${CLOUDINARY_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
