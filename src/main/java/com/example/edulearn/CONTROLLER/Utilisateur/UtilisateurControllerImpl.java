@@ -15,6 +15,7 @@ import com.example.edulearn.REPOSITORY.Academie.NiveauRepository;
 import com.example.edulearn.REPOSITORY.Academie.SectionRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.*;
 import com.example.edulearn.SERVICE.CloudinaryService;
+import com.example.edulearn.SERVICE.EmailService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -59,6 +60,7 @@ public class UtilisateurControllerImpl implements UtilisateurControllerInt{
     @Autowired
     private UtilisateurRepository utilisateurRepository;
 
+    @Autowired private EmailService emailService;
     private static String folderFile = System.getProperty("user.dir")+"/src/main/resources/templates/platform/public/assets/file"; //chemin a déinir
 
     @Override
@@ -312,7 +314,7 @@ public class UtilisateurControllerImpl implements UtilisateurControllerInt{
 
 
 
-        this.parentRepository.save(parentDB);
+        Parent parentSaved =  this.parentRepository.save(parentDB);
 
         Integer idParent = this.parentRepository.findTopByOrderByIdDesc().getId();
 
@@ -320,6 +322,15 @@ public class UtilisateurControllerImpl implements UtilisateurControllerInt{
 
         serverResponse.setMessage("Parent supprime");
         serverResponse.setStatus(true);
+
+        this.emailService.sendSimpleEmail(
+                parentSaved.getEmail(),
+                "Compte EduFreelance créé — Validation en cours",
+                "Bonjour " + parentSaved.getNomComplet() + ",\n\n" +
+                        "Votre compte sur EduFreelance a été créé avec succès. " +
+                        "Vous recevrez un email de confirmation une fois la validation terminée.\n\n" +
+                        "Cordialement,\nL'équipe Educia."
+        );
 
         return ResponseEntity.ok(idParent);
     }

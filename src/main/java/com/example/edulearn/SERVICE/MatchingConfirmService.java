@@ -2,6 +2,7 @@ package com.example.edulearn.SERVICE;
 
 import com.example.edulearn.DTO.IA.ScoreMatch;
 import com.example.edulearn.ENTITY.Repetition.MatiereOffre;
+import com.example.edulearn.ENTITY.Repetition.New.MatiereNewOffre;
 import com.example.edulearn.ENTITY.Repetition.OffreRepetition;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
 import lombok.Data;
@@ -114,14 +115,14 @@ public class MatchingConfirmService {
      * @throws Exception si l'appel échoue
      */
     public List<ScoreMatch> calculerMatchingMultipleEnseignant(
-            MatiereOffre matiereOffre,
+            MatiereNewOffre matiereOffre,
             List<Enseignant> enseignants
     ) throws Exception {
 
         // Données de l'offre
         String matiere = matiereOffre.getMatiere().getIntitule();
-        String niveau = matiereOffre.getOffreRepetition().getEleve().getNiveau().getIntitule();
-        String description = matiereOffre.getOffreRepetition().getBio();
+        String niveau = matiereOffre.getOffre().getNiveau().getIntitule();
+        String description = matiereOffre.getOffre().getBio();
         String besoins = "Préparation intensive, remise à niveau"; // Adapter selon besoin
 
         // Préparation de la requête multipart/form-data
@@ -142,7 +143,7 @@ public class MatchingConfirmService {
 
         // Ajout des fichiers CV et noms
         for (Enseignant enseignant : enseignants) {
-            String cheminCV = "templates/dashboard/public/assets/file/" + enseignant.getCv();
+            String cheminCV = "templates/educia/public/assets/file/cv/" + enseignant.getCv();
 
             Resource cvResource = new ClassPathResource(cheminCV);
 
@@ -204,12 +205,15 @@ public class MatchingConfirmService {
                             nomEnseignant,
                             matiereResult,
                             interpretation,
-                            score
+                            score*100
                     );
 
                     scores.add(scoreMatch);
                 }
 
+                for (int i = 0; i < scores.size(); i++) {
+                    System.out.println("les scores obtenus sont"+scores.get(i).getScoreRecupere());
+                }
                 // Les résultats sont déjà triés par l'API Python (ordre décroissant)
                 System.out.println("✅ Matching batch réussi : " + scores.size() + " enseignants analysés");
 

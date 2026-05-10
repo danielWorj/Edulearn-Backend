@@ -1,15 +1,21 @@
 package com.example.edulearn.CONTROLLER.Repetition;
 
+import com.example.edulearn.DTO.Offre.CandidatureDTO;
 import com.example.edulearn.DTO.Offre.OffreDTO;
 import com.example.edulearn.DTO.Repetition.*;
+import com.example.edulearn.ENTITY.Academie.Filiere;
 import com.example.edulearn.ENTITY.Academie.Matiere;
+import com.example.edulearn.ENTITY.Candidature.Candidature;
 import com.example.edulearn.ENTITY.Repetition.*;
 import com.example.edulearn.ENTITY.Repetition.New.MatiereNewOffre;
 import com.example.edulearn.ENTITY.Repetition.New.Offre;
 import com.example.edulearn.ENTITY.Response.ServerResponse;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
 import com.example.edulearn.ENTITY.Utilisateur.Parent;
+import com.example.edulearn.REPOSITORY.Academie.FiliereRepository;
 import com.example.edulearn.REPOSITORY.Academie.MatiereRepository;
+import com.example.edulearn.REPOSITORY.Academie.NiveauRepository;
+import com.example.edulearn.REPOSITORY.Candidature.CandidatureRepository;
 import com.example.edulearn.REPOSITORY.Repetition.*;
 import com.example.edulearn.REPOSITORY.Utilisateur.EleveRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.EnseignantRepository;
@@ -54,9 +60,15 @@ public class RepetitionControllerImpl implements RepetitionController {
     private HoraireRepetitionRepository horaireRepetitionRepository;
     @Autowired
     private MatiereOffreRepository matiereOffreRepetitionRepository;
-    private static ObjectMapper objectMapper;
+    private static ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private OffreRepository offreRepository;
+    @Autowired
+    private CandidatureRepository candidatureRepository;
+    @Autowired
+    private NiveauRepository niveauRepository;
+    @Autowired
+    private FiliereRepository filiereRepository;
     @Autowired
     private MatiereNewOffreRepository matiereNewOffreRepository;
     private static String folderFileCNI = System.getProperty("user.dir")+"/src/main/resources/templates/educia/public/assets/file/cni"; //chemin a déinir
@@ -90,8 +102,11 @@ public class RepetitionControllerImpl implements RepetitionController {
         offreDB.setBudget(offreDTO.getBudget());
         offreDB.setFrequence(offreDTO.getFrequence());
         offreDB.setDuree(offreDTO.getDuree());
-        offreDB.setParent(parentCreated);
+        offreDB.setDate(LocalDate.now());
 
+        offreDB.setParent(parentCreated);
+        offreDB.setNiveau(this.niveauRepository.findById(offreDTO.getNiveau()).orElse(null));
+        offreDB.setFiliere(this.filiereRepository.findById(offreDTO.getFiliere()).orElse(null));
         Offre offreCreated = this.offreRepository.save(offreDB);
 
         //Matiere Offre
@@ -147,6 +162,81 @@ public class RepetitionControllerImpl implements RepetitionController {
 
 
         return ResponseEntity.ok(new ServerResponse("L'offre a ete cree avec success", true));
+    }
+
+    @Override
+        public ResponseEntity<List<Offre>> getAllNewOffre() {
+        return ResponseEntity.ok(this.offreRepository.findAll());
+    }
+
+    @Override
+    public ResponseEntity<List<Offre>> getAllNewOffreByParent(Integer id) {
+        return ResponseEntity.ok(
+                this.offreRepository.findByParent(
+                        this.parentRepository.findById(id).orElse(null)
+                )
+        );
+    }
+
+    @Override
+    public ResponseEntity<List<Candidature>> findAllCandidature() {
+        return ResponseEntity.ok(this.candidatureRepository.findAll(Sort.by(Sort.Direction.DESC , "id")));
+    }
+
+    @Override
+    public ResponseEntity<List<Candidature>> findAllCandidatureByOffre(Integer id) {
+        return ResponseEntity.ok(this.candidatureRepository.findByOffre(this.offreRepository.findById(id).orElse(null)));
+    }
+
+    @Override
+    public ResponseEntity<List<Candidature>> findAllCandidatureByEnseignant(Integer id) {
+      return ResponseEntity.ok(this.candidatureRepository.findByEnseignant(this.enseignantRepository.findById(id).orElse(null)));
+
+    }
+
+    @Override
+    public ResponseEntity<ServerResponse> createCandidature(String candidature) throws JsonProcessingException {
+        CandidatureDTO candidatureDTO = objectMapper.readValue(candidature, CandidatureDTO.class);
+
+        Candidature candidatureDB = new Candidature();
+        Enseignant enseignant = this.enseignantRepository.findById(candidatureDTO.getEnseignant()).orElse(null);
+        Offre offre = this.offreRepository.findById(candidatureDTO.getOffre()).orElse(null);
+
+        candidatureDB.setEnseignant(enseignant);
+        candidatureDB.setOffre(offre);
+        candidatureDB.setDate(LocalDate.now());
+
+        this.candidatureRepository.save(candidatureDB);
+        return ResponseEntity.ok(new ServerResponse("Candaiture saved", true));
+    }
+
+    @Override
+    public ResponseEntity<ServerResponse> updateCandidature(String candidature) throws JsonProcessingException {
+        CandidatureDTO candidatureDTO = objectMapper.readValue(candidature, CandidatureDTO.class);
+
+        Candidature candidatureDB = new Candidature();
+        Enseignant enseignant = this.enseignantRepository.findById(candidatureDTO.getEnseignant()).orElse(null);
+        Offre offre = this.offreRepository.findById(candidatureDTO.getOffre()).orElse(null);
+
+        candidatureDB.setId(candidatureDTO.getId());
+        candidatureDB.setEnseignant(enseignant);
+        candidatureDB.setOffre(offre);
+
+        this.candidatureRepository.save(candidatureDB);
+        return ResponseEntity.ok(new ServerResponse("Candaiture updated", true));
+    }
+
+    @Override
+    public ResponseEntity<ServerResponse> deleteCandidature(Integer id) {
+        this.candidatureRepository.deleteById(id);
+        return ResponseEntity.ok(new ServerResponse("Candidature deleted", true) );
+    }
+
+    @Override
+    public ResponseEntity<List<MatiereNewOffre>> findAllNewMatiereOffre(Integer id) {
+        return ResponseEntity.ok(matiereNewOffreRepository.findByOffre(
+                this.offreRepository.findById(id).orElse(null)
+        ));
     }
 
     @Override

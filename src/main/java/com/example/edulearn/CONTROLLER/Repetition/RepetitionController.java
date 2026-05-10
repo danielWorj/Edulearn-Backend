@@ -1,7 +1,10 @@
 package com.example.edulearn.CONTROLLER.Repetition;
 
 import com.example.edulearn.ENTITY.Academie.Matiere;
+import com.example.edulearn.ENTITY.Candidature.Candidature;
 import com.example.edulearn.ENTITY.Repetition.*;
+import com.example.edulearn.ENTITY.Repetition.New.MatiereNewOffre;
+import com.example.edulearn.ENTITY.Repetition.New.Offre;
 import com.example.edulearn.ENTITY.Response.ServerResponse;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,12 +22,37 @@ public interface RepetitionController {
     //SUIVANT LA NOUVELLE APPROCHE
 
     //Offre
-    @PostMapping("new/offre/create ")
+    @PostMapping("/new/offre/create")
     ResponseEntity<ServerResponse> createNewOffer(@RequestParam("offre") String offre , @RequestParam("photo") MultipartFile photo, @RequestParam("cni") MultipartFile cni) throws IOException;
+    @GetMapping("/new/offre/all")
+    ResponseEntity<List<Offre>> getAllNewOffre();
+
+    @GetMapping("/new/offre/all/byparent/{id}")
+    ResponseEntity<List<Offre>> getAllNewOffreByParent(@PathVariable Integer id);
+
+    //Candidature
+    @GetMapping("/candidature/all")
+    ResponseEntity<List<Candidature>> findAllCandidature();
+    @GetMapping("/candidature/allbyoffre/{id}")
+    ResponseEntity<List<Candidature>> findAllCandidatureByOffre(@PathVariable Integer id);
+    @GetMapping("/candidature/allByEnseignant/{id}")
+    ResponseEntity<List<Candidature>> findAllCandidatureByEnseignant(@PathVariable Integer id);
+
+    @PostMapping("/candidature/create")
+    ResponseEntity<ServerResponse> createCandidature(@RequestParam("candidature") String candidature) throws JsonProcessingException;
+    @PostMapping("/candidature/update")
+    ResponseEntity<ServerResponse> updateCandidature(@RequestParam("candidature") String candidature) throws JsonProcessingException;
+    @GetMapping("/candidature/delete/{id}")
+    ResponseEntity<ServerResponse> deleteCandidature(@PathVariable Integer id);
+
+    //Matiere Offre
+    @GetMapping("/new/matiere-offre/allbyoffre/{id}")
+    ResponseEntity<List<MatiereNewOffre>> findAllNewMatiereOffre(@PathVariable Integer id);
 
 
 
 
+    //ANCIENNE APPROCHE
     //Repetition
     @PostMapping("/create")
     ResponseEntity<Integer> createRepetition(@RequestParam("repetition") String repetition) throws JsonProcessingException;

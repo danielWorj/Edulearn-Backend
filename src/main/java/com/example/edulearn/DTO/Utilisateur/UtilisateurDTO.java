@@ -15,5 +15,4 @@ public class UtilisateurDTO {
     private String dateInscription ;
     private Boolean status ; // true : actif , false : suspendu
     private String localisation ;
-    private String photo ;
 }

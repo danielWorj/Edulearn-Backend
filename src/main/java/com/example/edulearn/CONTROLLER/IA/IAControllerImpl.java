@@ -1,13 +1,20 @@
 package com.example.edulearn.CONTROLLER.IA;
 
 import com.example.edulearn.DTO.IA.MatchinResult;
+import com.example.edulearn.DTO.IA.MatchingDbDTO;
+import com.example.edulearn.ENTITY.IA.MatchingDB;
 import com.example.edulearn.DTO.IA.PromptDTO;
 import com.example.edulearn.DTO.IA.ScoreMatch;
 import com.example.edulearn.ENTITY.Repetition.MatiereOffre;
+import com.example.edulearn.ENTITY.Repetition.New.MatiereNewOffre;
 import com.example.edulearn.ENTITY.Repetition.OffreRepetition;
+import com.example.edulearn.ENTITY.Response.ServerResponse;
 import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
+import com.example.edulearn.REPOSITORY.IA.MatchingDBRepository;
+import com.example.edulearn.REPOSITORY.Repetition.MatiereNewOffreRepository;
 import com.example.edulearn.REPOSITORY.Repetition.MatiereOffreRepository;
 import com.example.edulearn.REPOSITORY.Repetition.OffreRepetitionRepository;
+import com.example.edulearn.REPOSITORY.Repetition.OffreRepository;
 import com.example.edulearn.REPOSITORY.Utilisateur.EnseignantRepository;
 import com.example.edulearn.SERVICE.IaService;
 import com.example.edulearn.SERVICE.MatchingConfirmService;
@@ -36,6 +43,15 @@ public class IAControllerImpl implements IaControllerInt{
     private MatchingConfirmService matchingConfirmService;
     @Autowired
     private MatiereOffreRepository matiereOffreRepetitionRepository;
+
+    //NEW WAY
+    @Autowired
+    private OffreRepository offreRepository;
+    @Autowired
+    private MatiereNewOffreRepository matiereNewOffreRepository;
+    @Autowired
+    private MatchingDBRepository matchingDBRepository;
+    private static ObjectMapper objetMapper = new ObjectMapper();
 
     @Override
     public ResponseEntity<String> assistantIA() {
@@ -113,7 +129,7 @@ public class IAControllerImpl implements IaControllerInt{
         try {
             // Récupère liste d'enseignants depuis la base
             List<Enseignant> enseignants = enseignantRepository.findAll();
-            MatiereOffre mo = this.matiereOffreRepetitionRepository.findById(1).orElse(null);
+            MatiereNewOffre mo = this.matiereNewOffreRepository.findById(1).orElse(null);
 
             // Calcul matching pour tous
             List<ScoreMatch> resultats = matchingConfirmService.calculerMatchingMultipleEnseignant(
@@ -143,50 +159,66 @@ public class IAControllerImpl implements IaControllerInt{
     }
 
     @Override
-    public ResponseEntity<List<MatchinResult>> matchingOffreAndMultipleEnseignant(Integer id) {
-        try {
-            System.out.println("id recu :" + id);
-            // Récupère liste d'enseignants depuis la base
-            List<MatiereOffre> mo = this.matiereOffreRepetitionRepository.findByOffreRepetition(
-                    this.offreRepetitionRepository.findById(id).orElse(null)
-            );
-            System.out.println(mo);
-            List<Enseignant> enseignants = enseignantRepository.findAll(); //Cette fonction va etre change pour selectionner les enseignants d'un certain profil
+    public ResponseEntity<List<MatchinResult>>  matchingOffreAndMultipleEnseignant(Integer id) {
+        List<MatchingDB> matchingDBS = this.matchingDBRepository.findByOffre(this.offreRepository.findById(id).orElse(null));
 
-            List<ScoreMatch> top3resultat = new ArrayList<ScoreMatch>();
 
-            if (mo.size()!=0){
-                // Calcul matching pour tous
-                List<ScoreMatch> resultats = matchingConfirmService.calculerMatchingMultipleEnseignant(
-                        mo.get(mo.size()==1?0:1),
-                        enseignants
+        if (matchingDBS.size()!=0){
+            List<MatchinResult> matchinResults = new ArrayList<>();
+
+            for (MatchingDB m : matchingDBS){
+                MatchinResult matchinResult = new MatchinResult(
+                        m.getEnseignant(),
+                        m.getScore().doubleValue()
                 );
 
-                top3resultat = resultats.subList(0, Math.min(3, resultats.size()));
-//
-                System.out.println("top 3 resultat: "+ top3resultat);
-                List<MatchinResult> matchinResults = new ArrayList<>();
-
-            }else{
-                System.out.println("Pas de matiere");
-
-
+                matchinResults.add(matchinResult);
             }
+            return ResponseEntity.ok(matchinResults);
+        }else{
+            try {
+                System.out.println("id recu :" + id);
+                // Récupère liste d'enseignants depuis la base
+                List<MatiereNewOffre> mo = this.matiereNewOffreRepository.findByOffre(
+                        this.offreRepository.findById(id).orElse(null)
+                );
+                System.out.println(mo);
+                List<Enseignant> enseignants = enseignantRepository.findAll(); //Cette fonction va etre change pour selectionner les enseignants d'un certain profil
+
+                List<ScoreMatch> top3resultat = new ArrayList<ScoreMatch>();
+
+                if (mo.size()!=0){
+                    // Calcul matching pour tous
+                    List<ScoreMatch> resultats = matchingConfirmService.calculerMatchingMultipleEnseignant(
+                            mo.get(mo.size()==1?0:1),
+                            enseignants
+                    );
+
+                    top3resultat = resultats.subList(0, Math.min(3, resultats.size()));
+//
+                    System.out.println("top 3 resultat: "+ top3resultat);
+                    List<MatchinResult> matchinResults = new ArrayList<>();
+
+                }else{
+                    System.out.println("Pas de matiere");
+
+
+                }
 //            //On reformate la facon de recevoir les resultats Enseignant et score
 //
 //            //System.out.println(enseignants);
-            List<MatchinResult> matchinResults = new ArrayList<>();
-            for (ScoreMatch sc : top3resultat) {
-                //on parcours la liste des resultats
-                System.out.println("Nom recherche : "+ sc.getNomEnseignant());
-                Optional<Enseignant> enseignantTrouve = enseignants.stream()
-                        .filter(e-> e.getNomComplet().equals(sc.getNomEnseignant())).findFirst();
-                System.out.println("enseignant trouve :" + enseignantTrouve);
-                if (enseignantTrouve.isPresent()){
-                    matchinResults.add(new MatchinResult(enseignantTrouve.orElse(null), sc.getScoreRecupere()));
-                }
+                List<MatchinResult> matchinResults = new ArrayList<>();
+                for (ScoreMatch sc : top3resultat) {
+                    //on parcours la liste des resultats
+                    System.out.println("Nom recherche : "+ sc.getNomEnseignant());
+                    Optional<Enseignant> enseignantTrouve = enseignants.stream()
+                            .filter(e-> e.getNomComplet().equals(sc.getNomEnseignant())).findFirst();
+                    System.out.println("enseignant trouve :" + enseignantTrouve);
+                    if (enseignantTrouve.isPresent()){
+                        matchinResults.add(new MatchinResult(enseignantTrouve.orElse(null), sc.getScoreRecupere()));
+                    }
 
-            }
+                }
 //            System.out.println("MATCHING RESULT FINAL : ");
 //            System.out.println(matchinResults);
 //            // Affiche les 3 meilleurs
@@ -203,12 +235,56 @@ public class IAControllerImpl implements IaControllerInt{
 //                        ));
 //                    });
 
-            return ResponseEntity.ok(matchinResults);
-            //return ResponseEntity.ok(null);
-        } catch (Exception e) {
-            System.err.println("Erreur matching : " + e.getMessage());
-            return null;
+                return ResponseEntity.ok(matchinResults);
+                //return ResponseEntity.ok(null);
+            } catch (Exception e) {
+                System.err.println("Erreur matching : " + e.getMessage());
+                return null;
+            }
         }
+
+    }
+
+    @Override
+    public ResponseEntity<List<MatchingDB>> findAllByOffre(Integer id) {
+        return ResponseEntity.ok(this.matchingDBRepository.findByOffre(
+                this.offreRepository.findById(id).orElse(null)
+        ));
+    }
+
+    @Override
+    public ResponseEntity<ServerResponse> createMatching(String matchings) throws JsonProcessingException {
+
+        List<MatchingDbDTO> liste = objetMapper.readValue(
+                matchings,
+                objetMapper.getTypeFactory().constructCollectionType(List.class, MatchingDbDTO.class)
+        );
+
+        for (MatchingDbDTO dto : liste) {
+
+            // Vérification : ce matching existe-t-il déjà ?
+            boolean dejaExistant = this.matchingDBRepository
+                    .existsByOffreIdAndEnseignantId(dto.getOffre(), dto.getEnseignant());
+
+            if (dejaExistant) {
+                return ResponseEntity.ok(new ServerResponse("Ce matching a déjà été sauvegardé", false));
+            }
+
+            MatchingDB matchingDB = new MatchingDB();
+            matchingDB.setOffre(this.offreRepository.findById(dto.getOffre()).orElse(null));
+            matchingDB.setEnseignant(this.enseignantRepository.findById(dto.getEnseignant()).orElse(null));
+            matchingDB.setScore(dto.getScore());
+            this.matchingDBRepository.save(matchingDB);
+        }
+
+        return ResponseEntity.ok(new ServerResponse("Matchings sauvegardés avec succès", true));
+    }
+
+    @Override
+    public ResponseEntity<List<MatchingDB>> findAllEnseignant(Integer id) {
+        return ResponseEntity.ok(this.matchingDBRepository.findByEnseignant(
+                this.enseignantRepository.findById(id).orElse(null)
+        ));
     }
 
     // Exemple d'utilisation dans un contrôleur ou service

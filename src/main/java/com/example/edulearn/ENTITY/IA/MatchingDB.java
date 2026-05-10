@@ -1,25 +1,25 @@
-package com.example.edulearn.ENTITY.Repetition.New;
+package com.example.edulearn.ENTITY.IA;
 
-import com.example.edulearn.ENTITY.Academie.Matiere;
-import com.example.edulearn.ENTITY.Repetition.OffreRepetition;
+import com.example.edulearn.ENTITY.Repetition.New.Offre;
+import com.example.edulearn.ENTITY.Utilisateur.Enseignant.Enseignant;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Entity
 @Data
-
-public class MatiereNewOffre {
+@Entity
+public class MatchingDB {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Offre offre ;
+    private Offre offre;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Matiere matiere ;
+    private Enseignant enseignant;
 
+    private Integer score ;
 }
