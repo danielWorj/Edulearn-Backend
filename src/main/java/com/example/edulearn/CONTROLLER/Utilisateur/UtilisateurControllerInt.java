@@ -48,8 +48,8 @@ public interface UtilisateurControllerInt {
     ResponseEntity<List<Parent>> allParent();
     @GetMapping("/parent/findById/{id}")
     ResponseEntity<Parent> findParentById(@PathVariable Integer id);
-    @GetMapping("/parent/status/{id}")
-    ResponseEntity<ServerResponse> changeParentStatus(@PathVariable Integer id);
+    @GetMapping("/change/status/{id}")
+    ResponseEntity<ServerResponse> changeStatus(@PathVariable Integer id);
     @GetMapping("/parent/delete/{id}")
     ResponseEntity<ServerResponse> deleteParent(@PathVariable Integer id);
     //Eleve

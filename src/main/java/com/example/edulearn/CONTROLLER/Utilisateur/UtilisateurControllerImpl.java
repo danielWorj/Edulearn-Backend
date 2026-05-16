@@ -177,30 +177,47 @@ public class UtilisateurControllerImpl implements UtilisateurControllerInt{
 
         if (!cv.isEmpty()){
             //S'il n'y a pas de fichier
-            fileName = cv.getOriginalFilename(); // le fichier prend le nom du client
+//            fileName = cv.getOriginalFilename(); // le fichier prend le nom du client
+//
+//            enseignantDB.setCv(fileName);
+//
+//            System.out.println("le nom du fichier "+ fileName);
+//
+//            Path path = Paths.get(folderFile,fileName);
+//
+//            cv.transferTo(path);
+//
+//            System.out.println("cv enregistre en base de donnee");
+//
 
-            enseignantDB.setCv(fileName);
+            String urlCV = this.cloudinaryService.uploadFile(cv);
 
-            System.out.println("le nom du fichier "+ fileName);
+            System.out.println("URL de la cv sur Cloudinary: " + urlCV);
 
-            Path path = Paths.get(folderFile,fileName);
+            enseignantDB.setCv(urlCV);
 
-            cv.transferTo(path);
-
-            System.out.println("cv enregistre en base de donnee");
+            System.out.println("CV enregistre en base de donnee");
         }
 
         if (!diplome.isEmpty()){
             //S'il n'y a pas de fichier
-            fileName = diplome.getOriginalFilename(); // le fichier prend le nom du client
+//            fileName = diplome.getOriginalFilename(); // le fichier prend le nom du client
+//
+//            enseignantDB.setDiplomeurl(fileName);
+//
+//            System.out.println("le nom du fichier "+ fileName);
+//
+//            Path path = Paths.get(folderFile,fileName);
+//
+//            diplome.transferTo(path);
+//
+//            System.out.println("diplome enregistre en base de donnee");
 
-            enseignantDB.setDiplomeurl(fileName);
+            String diplomeUrl = this.cloudinaryService.uploadFile(diplome);
 
-            System.out.println("le nom du fichier "+ fileName);
+            System.out.println("URL du diplome sur Cloudinary: " + diplomeUrl);
 
-            Path path = Paths.get(folderFile,fileName);
-
-            diplome.transferTo(path);
+            enseignantDB.setDiplomeurl(diplomeUrl);
 
             System.out.println("diplome enregistre en base de donnee");
         }
@@ -346,15 +363,15 @@ public class UtilisateurControllerImpl implements UtilisateurControllerInt{
     }
 
     @Override
-    public ResponseEntity<ServerResponse> changeParentStatus(Integer id) {
+    public ResponseEntity<ServerResponse> changeStatus(Integer id) {
 
-        Parent parent = this.parentRepository.findById(id).orElse(null);
+        Utilisateur utilisateur = this.utilisateurRepository.findById(id).orElse(null);
 
-        parent.setStatus(parent.getStatus()? false : true);
+        utilisateur.setStatus(utilisateur.getStatus()? false : true);
 
-        this.parentRepository.save(parent);
+        this.utilisateurRepository.save(utilisateur);
 
-        return ResponseEntity.ok(new ServerResponse("Status parent : changed", true));
+        return ResponseEntity.ok(new ServerResponse("Status utilisateur : changed", true));
     }
 
     @Override
